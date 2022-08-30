@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace MetaExchange.Services
 {
@@ -14,7 +13,7 @@ namespace MetaExchange.Services
         private Dictionary<string, OrderBook> orderBookDictionary = new Dictionary<string, OrderBook>();
         static readonly Regex pattern = new Regex(@"(?<key>\d+\.+\d+)[\t*|\s*](?<value>\{(.+|\t +|\s +))");
 
-        public async Task<ServiceResult> ProcessOrderBooksDataFilePathAsync(string input)
+        public ServiceResult ProcessOrderBooksDataFilePath(string input)
         {
             if (string.IsNullOrEmpty(input))
             {
@@ -22,7 +21,7 @@ namespace MetaExchange.Services
             }
             try
             {
-                return await CreateOrderBookDictionary(input);
+                return CreateOrderBookDictionary(input);
             }
             catch (Exception ex)
             {
@@ -41,11 +40,11 @@ namespace MetaExchange.Services
         }
 
 
-        private async Task<ServiceResult> CreateOrderBookDictionary(string input)
+        private ServiceResult CreateOrderBookDictionary(string input)
         {
             try
             {
-                var orderBooksString = await File.ReadAllTextAsync(input);
+                var orderBooksString = File.ReadAllText(input);
 
                 var matches = pattern.Matches(orderBooksString);
 

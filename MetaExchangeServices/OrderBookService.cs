@@ -4,7 +4,6 @@ using MetaExchange.Services.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace MetaExchange.Services
 {
@@ -20,13 +19,13 @@ namespace MetaExchange.Services
             _inputDataService = inputDataService;
         }
 
-        public async Task<ServiceObjectResult<IEnumerable<GetOrderResponse>>> FindBestFit(RequestInfo requestInfo,
+        public ServiceObjectResult<IEnumerable<GetOrderResponse>> FindBestFit(RequestInfo requestInfo,
             Dictionary<string, OrderBook> orderBookDictionary = null)
         {
             if (orderBookDictionary == null)
             {
                 string path = GetOrderBookFilePath();
-                var serviceResult = await _inputDataService.ProcessOrderBooksDataFilePathAsync(path) as ServiceObjectResult<Dictionary<string, OrderBook>>;
+                var serviceResult = _inputDataService.ProcessOrderBooksDataFilePath(path) as ServiceObjectResult<Dictionary<string, OrderBook>>;
                 orderBookDictionary = serviceResult.Value;
             }
 
@@ -42,7 +41,7 @@ namespace MetaExchange.Services
             Dictionary<string, OrderBook> orderBookDictionary)
         {
             var ord = _orderService.GetSellOrdersFromOrderBooks(orderBookDictionary);
-               var orders = ord.Value as List<GetOrderResponse>;
+            var orders = ord.Value as List<GetOrderResponse>;
             var balance = requestInfo.EuroBalance;
             var fits = new List<GetOrderResponse>(orders.Count);
 
@@ -50,7 +49,7 @@ namespace MetaExchange.Services
             {
                 var itemCost = item.Amount * item.Price;
 
-                if (item.Amount < requestInfo.BTCAmount - currentAmount
+                if (item.Amount <= requestInfo.BTCAmount - currentAmount
                     && balance >= itemCost)
                 {
                     fits.Add(item);

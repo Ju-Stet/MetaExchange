@@ -4,6 +4,6 @@ namespace MetaExchange.ConsoleUI
 {
     public interface IService
     {
-        public Task<bool> Go();
+        public void Go(string[] args);
     }
 }
