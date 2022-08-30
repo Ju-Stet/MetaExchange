@@ -6,7 +6,7 @@ namespace MetaExchange.Services.Mappings
 {
     public interface IOrderMapper
     {
-        IEnumerable<GetOrderResponse> MapBuyOrderList(Dictionary<string, OrderBook> orderBookDictionary);
-        IEnumerable<GetOrderResponse> MapSellOrderList(Dictionary<string, OrderBook> orderBookDictionary);
+        List<GetOrderResponse> MapBuyOrderList(Dictionary<string, OrderBook> orderBookDictionary);
+        List<GetOrderResponse> MapSellOrderList(Dictionary<string, OrderBook> orderBookDictionary);
     }
 }

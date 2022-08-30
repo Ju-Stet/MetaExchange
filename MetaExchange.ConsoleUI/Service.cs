@@ -14,7 +14,7 @@ namespace MetaExchange.ConsoleApp
         private readonly IOrderBookService _orderBookService;
         private Dictionary<string, OrderBook> _orderDictionary;
         private RequestInfo _requestInfo = new RequestInfo();
-        private IEnumerable<GetOrderResponse> _orders;
+        private List<GetOrderResponse> _orders;
 
         public Service(IInputDataService inputDataService,
             IOrderBookService orderBookService)
@@ -141,7 +141,7 @@ namespace MetaExchange.ConsoleApp
 
         private void RenderOutputInfo()
         {
-            if ((_orders as List<GetOrderResponse>).Count > 0)
+            if (_orders.Count > 0)
             {
                 foreach (var item in _orders)
                 {

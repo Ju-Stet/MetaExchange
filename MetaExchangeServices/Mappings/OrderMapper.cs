@@ -6,7 +6,7 @@ namespace MetaExchange.Services.Mappings
 {
     public class OrderMapper : IOrderMapper
     {
-        public IEnumerable<GetOrderResponse> MapBuyOrderList(Dictionary<string, OrderBook> orderBookDictionary)
+        public List<GetOrderResponse> MapBuyOrderList(Dictionary<string, OrderBook> orderBookDictionary)
         {
             var allOrderBooksOrderResponseList = new List<GetOrderResponse>();
 
@@ -26,7 +26,7 @@ namespace MetaExchange.Services.Mappings
             return allOrderBooksOrderResponseList;
         }
 
-        public IEnumerable<GetOrderResponse> MapSellOrderList(Dictionary<string, OrderBook> orderBookDictionary)
+        public List<GetOrderResponse> MapSellOrderList(Dictionary<string, OrderBook> orderBookDictionary)
         {
             var allOrderBooksOrderResponseList = new List<GetOrderResponse>();
 

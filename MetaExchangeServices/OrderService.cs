@@ -15,7 +15,7 @@ namespace MetaExchange.Services
             _orderMapper = orderBookMapper;
         }
 
-        public ServiceObjectResult<IEnumerable<GetOrderResponse>> GetSellOrdersFromOrderBooks(Dictionary<string, OrderBook> orderBookDictionary)
+        public ServiceObjectResult<List<GetOrderResponse>> GetSellOrdersFromOrderBooks(Dictionary<string, OrderBook> orderBookDictionary)
         {
             if (orderBookDictionary == null || orderBookDictionary.Count == 0)
             {
@@ -28,10 +28,10 @@ namespace MetaExchange.Services
                     .ThenByDescending(o => o.Amount)
                     .ToList();
 
-            return new ServiceObjectResult<IEnumerable<GetOrderResponse>>(orders);
+            return new ServiceObjectResult<List<GetOrderResponse>>(orders);
         }
 
-        public ServiceObjectResult<IEnumerable<GetOrderResponse>> GetBuyOrdersFromOrderBooks(Dictionary<string, OrderBook> orderBookDictionary)
+        public ServiceObjectResult<List<GetOrderResponse>> GetBuyOrdersFromOrderBooks(Dictionary<string, OrderBook> orderBookDictionary)
         {
             if (orderBookDictionary == null || orderBookDictionary.Count == 0)
             {
@@ -44,7 +44,7 @@ namespace MetaExchange.Services
                     .ThenByDescending(o => o.Amount)
                     .ToList();
 
-            return new ServiceObjectResult<IEnumerable<GetOrderResponse>>(orders);
+            return new ServiceObjectResult<List<GetOrderResponse>>(orders);
         }
     }
 }
