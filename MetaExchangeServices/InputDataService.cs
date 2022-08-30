@@ -1,5 +1,6 @@
 ﻿using MetaExchange.Models;
 using MetaExchange.Services.Converters;
+using MetaExchange.Services.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace MetaExchange.Services
 {
     public class InputDataService : IInputDataService
     {
-        private Dictionary<string, OrderBook> orderBookDictionary = new Dictionary<string, OrderBook>();
+        private List<IdOrderBookDTO> idOrderBookDTOs = new List<IdOrderBookDTO>();
         static readonly Regex pattern = new Regex(@"(?<key>\d+\.+\d+)[\t*|\s*](?<value>\{(.+|\t +|\s +))");
 
         public ServiceResult ProcessOrderBooksDataFilePath(string input)
@@ -21,7 +22,7 @@ namespace MetaExchange.Services
             }
             try
             {
-                return CreateOrderBookDictionary(input);
+                return CreateIdOrderBookDTOList(input);
             }
             catch (Exception ex)
             {
@@ -31,16 +32,16 @@ namespace MetaExchange.Services
 
         public ServiceResult ProcessCurrencyAmount(string currencyAmount)
         {
-            if (string.IsNullOrEmpty(currencyAmount) || !Double.TryParse(currencyAmount, out double result))
+            if (string.IsNullOrEmpty(currencyAmount) || !Decimal.TryParse(currencyAmount, out decimal result))
             {
                 return new ServiceResult("Unknown currency amount type");
             }
 
-            return new ServiceObjectResult<double>(result);
+            return new ServiceObjectResult<decimal>(result);
         }
 
 
-        private ServiceResult CreateOrderBookDictionary(string input)
+        private ServiceResult CreateIdOrderBookDTOList(string input)
         {
             try
             {
@@ -52,10 +53,14 @@ namespace MetaExchange.Services
                 {
                     var serializer = JsonSerializer.Create(Converter.Settings);
                     var jsonReader = new JsonTextReader(new StringReader(match.Groups["value"].Value));
-                    var orderBook = serializer.Deserialize<OrderBook>(jsonReader);
-                    orderBookDictionary.Add(match.Groups["key"].Value, orderBook);
+                    var orderBook = serializer.Deserialize<OrderBookDTO>(jsonReader);
+                    idOrderBookDTOs.Add(new IdOrderBookDTO()
+                    {
+                        ID = match.Groups["key"].Value,
+                        OrderBook = orderBook
+                    });
                 }
-                return new ServiceObjectResult<Dictionary<string, OrderBook>>(orderBookDictionary);
+                return new ServiceObjectResult<List<IdOrderBookDTO>>(idOrderBookDTOs);
             }
             catch (Exception)
             {

@@ -1,5 +1,4 @@
 ﻿using MetaExchange.Models;
-using System.Threading.Tasks;
 
 namespace MetaExchange.Services
 {

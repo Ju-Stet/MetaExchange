@@ -12,7 +12,7 @@ namespace MetaExchange.ConsoleApp
     {
         private readonly IInputDataService _inputDataService;
         private readonly IOrderBookService _orderBookService;
-        private Dictionary<string, OrderBook> _orderDictionary;
+        private List<IdOrderBookDTO> _idOrderBookDTOs;
         private RequestInfo _requestInfo = new RequestInfo();
         private List<GetOrderResponse> _orders;
 
@@ -41,9 +41,9 @@ namespace MetaExchange.ConsoleApp
         private void ProcessDataFilePath(string path)
         {
             var result = _inputDataService.ProcessOrderBooksDataFilePath(path);
-            if (result is ServiceObjectResult<Dictionary<string, OrderBook>>)
+            if (result is ServiceObjectResult<List<IdOrderBookDTO>>)
             {
-                _orderDictionary = (result as ServiceObjectResult<Dictionary<string, OrderBook>>).Value;
+                _idOrderBookDTOs = (result as ServiceObjectResult<List<IdOrderBookDTO>>).Value;
             }
             else
             {
@@ -74,9 +74,9 @@ namespace MetaExchange.ConsoleApp
             {
                 var result = _inputDataService.ProcessCurrencyAmount(BTCAmount);
 
-                if (result is ServiceObjectResult<double>)
+                if (result is ServiceObjectResult<decimal>)
                 {
-                    _requestInfo.BTCAmount = (result as ServiceObjectResult<double>).Value;
+                    _requestInfo.BTCAmount = (result as ServiceObjectResult<decimal>).Value;
                 }
                 else
                 {
@@ -94,15 +94,15 @@ namespace MetaExchange.ConsoleApp
             try
             {
                 var result = _inputDataService.ProcessCurrencyAmount(balance);
-                var isOfDouble = result is ServiceObjectResult<double>;
+                var isOfDouble = result is ServiceObjectResult<decimal>;
 
                 if (isOfDouble && currencyType == CurrencyTypeEnum.EUR)
                 {
-                    _requestInfo.EuroBalance = (result as ServiceObjectResult<double>).Value;
+                    _requestInfo.EuroBalance = (result as ServiceObjectResult<decimal>).Value;
                 }
                 else if (isOfDouble && currencyType == CurrencyTypeEnum.BTC)
                 {
-                    _requestInfo.BTCBalance = (result as ServiceObjectResult<double>).Value;
+                    _requestInfo.BTCBalance = (result as ServiceObjectResult<decimal>).Value;
                 }
                 else
                 {
@@ -130,7 +130,7 @@ namespace MetaExchange.ConsoleApp
         {
             try
             {
-                var serviceObjectResult = _orderBookService.FindBestFit(_requestInfo, _orderDictionary);
+                var serviceObjectResult = _orderBookService.FindBestFit(_requestInfo, _idOrderBookDTOs);
                 _orders = serviceObjectResult.Value;
             }
             catch (Exception ex)

@@ -6,6 +6,6 @@ namespace MetaExchange.Services
 {
     public interface IOrderBookService
     {
-        ServiceObjectResult<List<GetOrderResponse>> FindBestFit(RequestInfo requestInfo, Dictionary<string, OrderBook> orderBookDictionary = null);
+        ServiceObjectResult<List<GetOrderResponse>> FindBestFit(RequestInfo requestInfo, List<IdOrderBookDTO> idOrderBookDTOs = null);
     }
 }
