@@ -1,6 +1,7 @@
 The solution contains a console application and a web api application
 
-When working with the console, you need to input the path to the file with order books, and input data for processing: type of operation (buy/sell), amount of currency, balances.
+The console application accepts 5 arguments: current user balance in EUR, current user BTC balance, path to the orderbooks file, type of operation (buy/sell), amount of BTC. 
+For example: 0 3 C:\order_books_data sell 1
 
 Web application accepts in the body of the request an object containing information about the type of operation (0 - buy, 1 - sale), amount of currency, currency balances. For example:
 {
