@@ -126,7 +126,14 @@ namespace MetaExchange.ConsoleApp
         private void FindBestFit(OrderTypeEnum orderType)
         {
             var serviceObjectResult = _orderBookService.FindBestFit(_requestInfo, _idOrderBookDTOs);
-            _orders = serviceObjectResult.Value;
+            if (serviceObjectResult is ServiceObjectResult<List<GetOrderResponse>>)
+            {
+                _orders = (serviceObjectResult as ServiceObjectResult<List<GetOrderResponse>>).Value;
+            }
+            else
+            {
+                throw new Exception(serviceObjectResult.Message);
+            }
         }
 
         private void RenderOutputInfo()

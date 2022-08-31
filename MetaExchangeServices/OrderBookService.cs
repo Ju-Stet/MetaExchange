@@ -18,7 +18,7 @@ namespace MetaExchange.Services
             _inputDataService = inputDataService;
         }
 
-        public ServiceObjectResult<List<GetOrderResponse>> FindBestFit(RequestInfo requestInfo,
+        public ServiceResult FindBestFit(RequestInfo requestInfo,
             List<IdOrderBookDTO> idOrderBookDTOs = null)
         {
             if (idOrderBookDTOs == null)
@@ -28,24 +28,36 @@ namespace MetaExchange.Services
                 idOrderBookDTOs = serviceResult.Value;
             }
 
-            return requestInfo.OrderType switch
+            if (requestInfo.OrderType == OrderTypeEnum.Buy)
             {
-                OrderTypeEnum.Buy => FindBestBuyFit(requestInfo, idOrderBookDTOs),
-                OrderTypeEnum.Sell => FindBestSellFit(requestInfo, idOrderBookDTOs),
-                _ => new ServiceObjectResult<List<GetOrderResponse>>()
-            };
+                var orderResponses = _orderService.GetSellOrdersFromOrderBooks(idOrderBookDTOs);
+                if (orderResponses != null)
+                {
+                    return FindBestBuyFit(requestInfo, orderResponses.Value);
+                }
+                return new ServiceResult("Could not get orders from order books");
+            }
+            else if (requestInfo.OrderType == OrderTypeEnum.Sell)
+            {
+                var orderResponses = _orderService.GetBuyOrdersFromOrderBooks(idOrderBookDTOs);
+                if (orderResponses != null)
+                {
+                    return FindBestSellFit(requestInfo, orderResponses.Value);
+                }
+                return new ServiceResult("Could not get orders from order books");
+            }
+
+            return new ServiceResult("Unknown order type");
         }
 
         private ServiceObjectResult<List<GetOrderResponse>> FindBestBuyFit(RequestInfo requestInfo,
-            List<IdOrderBookDTO> idOrderBookDTOs)
+            List<GetOrderResponse> orderResponses)
         {
-            var ord = _orderService.GetSellOrdersFromOrderBooks(idOrderBookDTOs);
-            var orders = ord.Value;
             var balance = requestInfo.EuroBalance;
-            var fits = new List<GetOrderResponse>(orders.Count);
+            var fits = new List<GetOrderResponse>(orderResponses.Count);
             var currentAmount = 0M;
 
-            foreach (var item in orders)
+            foreach (var item in orderResponses)
             {
                 var itemCost = item.Amount * item.Price;
 
@@ -67,14 +79,13 @@ namespace MetaExchange.Services
             return new ServiceObjectResult<List<GetOrderResponse>>(fits);
         }
 
-        private ServiceObjectResult<List<GetOrderResponse>> FindBestSellFit(RequestInfo requestInfo, List<IdOrderBookDTO> idOrderBookDTOs)
+        private ServiceObjectResult<List<GetOrderResponse>> FindBestSellFit(RequestInfo requestInfo, List<GetOrderResponse> orderResponses)
         {
-            var orders = _orderService.GetBuyOrdersFromOrderBooks(idOrderBookDTOs).Value as List<GetOrderResponse>;
             var amount = requestInfo.BTCAmount > requestInfo.BTCBalance ? requestInfo.BTCBalance : requestInfo.BTCAmount;
-            var count = orders.Count;
+            var count = orderResponses.Count;
             var fits = new List<GetOrderResponse>(count);
 
-            foreach (var item in orders)
+            foreach (var item in orderResponses)
             {
                 if (amount >= item.Amount)
                 {
