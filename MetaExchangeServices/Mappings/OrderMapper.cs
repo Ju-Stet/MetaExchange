@@ -1,22 +1,21 @@
-﻿using MetaExchange.Models;
-using MetaExchange.Services.Models;
+﻿using MetaExchange.Services.Models;
 using System.Collections.Generic;
 
 namespace MetaExchange.Services.Mappings
 {
     public class OrderMapper : IOrderMapper
     {
-        public IEnumerable<GetOrderResponse> MapBuyOrderList(Dictionary<string, OrderBook> orderBookDictionary)
+        public List<GetOrderResponse> MapBuyOrderList(List<IdOrderBookDTO> idOrderBookDTOs)
         {
             var allOrderBooksOrderResponseList = new List<GetOrderResponse>();
 
-            foreach (KeyValuePair<string, OrderBook> entry in orderBookDictionary)
+            foreach (var entry in idOrderBookDTOs)
             {
-                var orderResponseList = new List<GetOrderResponse>(entry.Value.Bids.Length);
+                var orderResponseList = new List<GetOrderResponse>(entry.OrderBook.Bids.Length);
 
-                foreach (var ask in entry.Value.Bids)
+                foreach (var ask in entry.OrderBook.Bids)
                 {
-                    var orderResponse = MapOrder(ask, entry.Key);
+                    var orderResponse = MapOrder(ask, entry.ID);
                     orderResponseList.Add(orderResponse);
                 }
 
@@ -26,17 +25,17 @@ namespace MetaExchange.Services.Mappings
             return allOrderBooksOrderResponseList;
         }
 
-        public IEnumerable<GetOrderResponse> MapSellOrderList(Dictionary<string, OrderBook> orderBookDictionary)
+        public List<GetOrderResponse> MapSellOrderList(List<IdOrderBookDTO> idOrderBookDTOs)
         {
             var allOrderBooksOrderResponseList = new List<GetOrderResponse>();
 
-            foreach (KeyValuePair<string, OrderBook> entry in orderBookDictionary)
+            foreach (var entry in idOrderBookDTOs)
             {
-                var orderResponseList = new List<GetOrderResponse>(entry.Value.Asks.Length);
+                var orderResponseList = new List<GetOrderResponse>(entry.OrderBook.Asks.Length);
 
-                foreach (var ask in entry.Value.Asks)
+                foreach (var ask in entry.OrderBook.Asks)
                 {
-                    var orderResponse = MapOrder(ask, entry.Key);
+                    var orderResponse = MapOrder(ask, entry.ID);
                     orderResponseList.Add(orderResponse);
                 }
 
@@ -46,11 +45,11 @@ namespace MetaExchange.Services.Mappings
             return allOrderBooksOrderResponseList;
         }
 
-        private GetOrderResponse MapOrder(Ask ask, string key)
+        private GetOrderResponse MapOrder(AskDTO ask, string orderBookId)
         {
             GetOrderResponse orderResponse = new GetOrderResponse();
 
-            orderResponse.OrderBookId = key;
+            orderResponse.OrderBookId = orderBookId;
             orderResponse.Id = ask.Order.Id;
             orderResponse.Time = ask.Order.Time;
             orderResponse.Type = ask.Order.Type;

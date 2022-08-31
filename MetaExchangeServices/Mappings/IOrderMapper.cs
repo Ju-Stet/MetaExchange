@@ -1,12 +1,11 @@
-﻿using MetaExchange.Models;
-using MetaExchange.Services.Models;
+﻿using MetaExchange.Services.Models;
 using System.Collections.Generic;
 
 namespace MetaExchange.Services.Mappings
 {
     public interface IOrderMapper
     {
-        IEnumerable<GetOrderResponse> MapBuyOrderList(Dictionary<string, OrderBook> orderBookDictionary);
-        IEnumerable<GetOrderResponse> MapSellOrderList(Dictionary<string, OrderBook> orderBookDictionary);
+        List<GetOrderResponse> MapBuyOrderList(List<IdOrderBookDTO> idOrderBookDTOs);
+        List<GetOrderResponse> MapSellOrderList(List<IdOrderBookDTO> idOrderBookDTOs);
     }
 }

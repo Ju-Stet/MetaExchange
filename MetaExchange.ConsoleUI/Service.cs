@@ -5,7 +5,6 @@ using MetaExchange.Services;
 using MetaExchange.Services.Models;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace MetaExchange.ConsoleApp
 {
@@ -13,9 +12,9 @@ namespace MetaExchange.ConsoleApp
     {
         private readonly IInputDataService _inputDataService;
         private readonly IOrderBookService _orderBookService;
-        private Dictionary<string, OrderBook> _orderDictionary;
+        private List<IdOrderBookDTO> _idOrderBookDTOs;
         private RequestInfo _requestInfo = new RequestInfo();
-        private IEnumerable<GetOrderResponse> _orders;
+        private List<GetOrderResponse> _orders;
 
         public Service(IInputDataService inputDataService,
             IOrderBookService orderBookService)
@@ -24,169 +23,122 @@ namespace MetaExchange.ConsoleApp
             _orderBookService = orderBookService;
         }
 
-        public async Task<bool> Go()
+        public void Go(string[] args)
         {
-            var result = await ProcessDataFilePath();
-            ProcessOrderTypeInput();
-            ProcessBTCAmountInput();
-            ProcessBalanceInput(CurrencyTypeEnum.BTC);
-            ProcessBalanceInput(CurrencyTypeEnum.EUR);
-
-            RenderInputInfo();
-            result = await FindBestFit(_requestInfo.OrderType);
-            RenderOutputInfo();
-
-            return result;
-        }
-
-        private async Task<bool> ProcessDataFilePath()
-        {
-            var flag = false;
-
-            while (!flag)
+            try
             {
-                Console.WriteLine("> Input the path of data file");
-                var dataFilePath = Console.ReadLine().ToLower();
-                try
-                {
-                    var result = await _inputDataService.ProcessOrderBooksDataFilePathAsync(dataFilePath);
-                    if (result is ServiceObjectResult<Dictionary<string, OrderBook>>)
-                    {
-                        _orderDictionary = (result as ServiceObjectResult<Dictionary<string, OrderBook>>).Value;
-                        flag = true;
-                    }
-                    else
-                    {
-                        throw new Exception(result.Message);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+                ProcessBalanceInput(CurrencyTypeEnum.EUR, args[0]);
+                ProcessBalanceInput(CurrencyTypeEnum.BTC, args[1]);
+                ProcessDataFilePath(args[2]);
+                ProcessOrderTypeInput(args[3]);
+                ProcessBTCAmountInput(args[4]);
+
+                RenderInputInfo();
+                FindBestFit(_requestInfo.OrderType);
+                RenderOutputInfo();
             }
-            return flag;
-        }
-
-        private void ProcessOrderTypeInput()
-        {
-            var flag = false;
-
-            while (!flag)
+            catch (Exception ex)
             {
-                Console.WriteLine("> Input the order type: B - for buy or S - for sell");
-                var input = Console.ReadLine();
-
-                if (input.ToLower() == "b")
-                {
-                    _requestInfo.OrderType = OrderTypeEnum.Buy;
-                    flag = true;
-                }
-                else if (input.ToLower() == "s")
-                {
-                    _requestInfo.OrderType = OrderTypeEnum.Sell;
-                    flag = true;
-                }
-                else
-                {
-                    Console.WriteLine("> Unknown command");
-                }
+                Console.WriteLine(ex.Message);
             }
         }
 
-        private void ProcessBTCAmountInput()
+
+
+        private void ProcessDataFilePath(string path)
         {
-            var flag = false;
 
-            while (!flag)
+            var result = _inputDataService.ProcessOrderBooksDataFilePath(path);
+            if (result is ServiceObjectResult<List<IdOrderBookDTO>>)
             {
-                Console.WriteLine($"> Input the amount of BTS to {_requestInfo.OrderType.ToString().ToLower()}");
-                var BTSAmount = Console.ReadLine().ToLower();
+                _idOrderBookDTOs = (result as ServiceObjectResult<List<IdOrderBookDTO>>).Value;
+            }
+            else
+            {
+                throw new Exception(result.Message);
+            }
 
-                try
-                {
-                    var result = _inputDataService.ProcessCurrencyAmount(BTSAmount);
+        }
 
-                    if (result is ServiceObjectResult<double>)
-                    {
-                        _requestInfo.BTCAmount = (result as ServiceObjectResult<double>).Value;
-                        flag = true;
-                    }
-                    else
-                    {
-                        throw new Exception(result.Message);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+        private void ProcessOrderTypeInput(string orderType)
+        {
+            if (orderType.ToLower() == OrderTypeEnum.Buy.ToString().ToLower())
+            {
+                _requestInfo.OrderType = OrderTypeEnum.Buy;
+
+            }
+            else if (orderType.ToLower() == OrderTypeEnum.Sell.ToString().ToLower())
+            {
+                _requestInfo.OrderType = OrderTypeEnum.Sell;
+            }
+            else
+            {
+                Console.WriteLine("Unknown command");
             }
         }
 
-        private void ProcessBalanceInput(CurrencyTypeEnum currencyType)
+        private void ProcessBTCAmountInput(string BTCAmount)
         {
-            var flag = false;
+            var result = _inputDataService.ProcessCurrencyAmount(BTCAmount);
 
-            while (!flag)
+            if (result is ServiceObjectResult<decimal>)
             {
-                Console.WriteLine($"> Input your {currencyType} balance");
-                var balance = Console.ReadLine().ToLower();
-
-                try
-                {
-                    var result = _inputDataService.ProcessCurrencyAmount(balance);
-                    var isOfDouble = result is ServiceObjectResult<double>;
-
-                    if (isOfDouble && currencyType == CurrencyTypeEnum.EUR)
-                    {
-                        _requestInfo.EuroBalance = (result as ServiceObjectResult<double>).Value;
-                        flag = true;
-                    }
-                    else if (isOfDouble && currencyType == CurrencyTypeEnum.BTC)
-                    {
-                        _requestInfo.BTCBalance = (result as ServiceObjectResult<double>).Value;
-                        flag = true;
-                    }
-                    else
-                    {
-                        throw new Exception(result.Message);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+                _requestInfo.BTCAmount = (result as ServiceObjectResult<decimal>).Value;
             }
+            else
+            {
+                throw new Exception(result.Message);
+            }
+
+        }
+
+        private void ProcessBalanceInput(CurrencyTypeEnum currencyType, string balance)
+        {
+            var result = _inputDataService.ProcessCurrencyAmount(balance);
+            var isOfDecimal = result is ServiceObjectResult<decimal>;
+
+            if (isOfDecimal && currencyType == CurrencyTypeEnum.EUR)
+            {
+                _requestInfo.EuroBalance = (result as ServiceObjectResult<decimal>).Value;
+            }
+            else if (isOfDecimal && currencyType == CurrencyTypeEnum.BTC)
+            {
+                _requestInfo.BTCBalance = (result as ServiceObjectResult<decimal>).Value;
+            }
+            else
+            {
+                throw new Exception(result.Message);
+            }
+
         }
 
         private void RenderInputInfo()
         {
-            Console.WriteLine(new string('_', 25));
-            Console.WriteLine($"OrderType: {_requestInfo.OrderType};\nBTC amount: {_requestInfo.BTCAmount};" +
-                $"\nBTC current balance: {_requestInfo.BTCBalance};\nEuro current balance: {_requestInfo.EuroBalance}");
+            Console.WriteLine($"OrderType: {_requestInfo.OrderType};" +
+                $"\nBTC amount: {_requestInfo.BTCAmount};" +
+                $"\nBTC current balance: {_requestInfo.BTCBalance};" +
+                $"\nEuro current balance: {_requestInfo.EuroBalance}.");
             Console.WriteLine(new string('_', 25));
             Console.WriteLine("Processing your request...");
+            Console.WriteLine(new string('_', 25));
         }
 
-        private async Task<bool> FindBestFit(OrderTypeEnum orderType)
+        private void FindBestFit(OrderTypeEnum orderType)
         {
-            try
+            var serviceObjectResult = _orderBookService.FindBestFit(_requestInfo, _idOrderBookDTOs);
+            if (serviceObjectResult is ServiceObjectResult<List<GetOrderResponse>>)
             {
-                var serviceObjectResult =  await _orderBookService.FindBestFit(_requestInfo, _orderDictionary);
-                _orders = serviceObjectResult.Value;
+                _orders = (serviceObjectResult as ServiceObjectResult<List<GetOrderResponse>>).Value;
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine(ex);
+                throw new Exception(serviceObjectResult.Message);
             }
-
-            return true;
         }
 
         private void RenderOutputInfo()
         {
-            if ((_orders as List<GetOrderResponse>).Count > 0)
+            if (_orders.Count > 0)
             {
                 foreach (var item in _orders)
                 {

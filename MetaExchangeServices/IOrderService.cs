@@ -6,7 +6,7 @@ namespace MetaExchange.Services
 {
     public interface IOrderService
     {
-        ServiceObjectResult<IEnumerable<GetOrderResponse>> GetBuyOrdersFromOrderBooks(Dictionary<string, OrderBook> orderBookDictionary);
-        ServiceObjectResult<IEnumerable<GetOrderResponse>> GetSellOrdersFromOrderBooks(Dictionary<string, OrderBook> orderBookDictionary);
+        ServiceObjectResult<List<GetOrderResponse>> GetBuyOrdersFromOrderBooks(List<IdOrderBookDTO> idOrderBookDTOs);
+        ServiceObjectResult<List<GetOrderResponse>> GetSellOrdersFromOrderBooks(List<IdOrderBookDTO> idOrderBookDTOs);
     }
 }

@@ -7,17 +7,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace MetaExchange.ConsoleUI
 {
     internal class Program
     {
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
 
-            await host.Services.GetService<IService>().Go();
+            host.Services.GetService<IService>().Go(args);
 
             Console.ReadKey();
         }

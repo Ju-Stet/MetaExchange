@@ -15,8 +15,8 @@ namespace MetaExchange.Services.Models
 
         public KindEnum Kind { get; set; }
 
-        public double Amount { get; set; }
+        public decimal Amount { get; set; }
 
-        public double Price { get; set; }
+        public decimal Price { get; set; }
     }
 }

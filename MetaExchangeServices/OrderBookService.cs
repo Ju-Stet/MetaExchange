@@ -4,7 +4,6 @@ using MetaExchange.Services.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace MetaExchange.Services
 {
@@ -12,7 +11,6 @@ namespace MetaExchange.Services
     {
         private readonly IOrderService _orderService;
         private readonly IInputDataService _inputDataService;
-        private double currentAmount = 0D;
         public OrderBookService(IOrderService orderService,
             IInputDataService inputDataService)
         {
@@ -20,37 +18,50 @@ namespace MetaExchange.Services
             _inputDataService = inputDataService;
         }
 
-        public async Task<ServiceObjectResult<IEnumerable<GetOrderResponse>>> FindBestFit(RequestInfo requestInfo,
-            Dictionary<string, OrderBook> orderBookDictionary = null)
+        public ServiceResult FindBestFit(RequestInfo requestInfo,
+            List<IdOrderBookDTO> idOrderBookDTOs = null)
         {
-            if (orderBookDictionary == null)
+            if (idOrderBookDTOs == null)
             {
                 string path = GetOrderBookFilePath();
-                var serviceResult = await _inputDataService.ProcessOrderBooksDataFilePathAsync(path) as ServiceObjectResult<Dictionary<string, OrderBook>>;
-                orderBookDictionary = serviceResult.Value;
+                var serviceResult = _inputDataService.ProcessOrderBooksDataFilePath(path) as ServiceObjectResult<List<IdOrderBookDTO>>;
+                idOrderBookDTOs = serviceResult.Value;
             }
 
-            return requestInfo.OrderType switch
+            if (requestInfo.OrderType == OrderTypeEnum.Buy)
             {
-                OrderTypeEnum.Buy => FindBestBuyFit(requestInfo, orderBookDictionary),
-                OrderTypeEnum.Sell => FindBestSellFit(requestInfo, orderBookDictionary),
-                _ => new ServiceObjectResult<IEnumerable<GetOrderResponse>>()
-            };
+                var orderResponses = _orderService.GetSellOrdersFromOrderBooks(idOrderBookDTOs);
+                if (orderResponses != null)
+                {
+                    return FindBestBuyFit(requestInfo, orderResponses.Value);
+                }
+                return new ServiceResult("Could not get orders from order books");
+            }
+            else if (requestInfo.OrderType == OrderTypeEnum.Sell)
+            {
+                var orderResponses = _orderService.GetBuyOrdersFromOrderBooks(idOrderBookDTOs);
+                if (orderResponses != null)
+                {
+                    return FindBestSellFit(requestInfo, orderResponses.Value);
+                }
+                return new ServiceResult("Could not get orders from order books");
+            }
+
+            return new ServiceResult("Unknown order type");
         }
 
-        private ServiceObjectResult<IEnumerable<GetOrderResponse>> FindBestBuyFit(RequestInfo requestInfo,
-            Dictionary<string, OrderBook> orderBookDictionary)
+        private ServiceObjectResult<List<GetOrderResponse>> FindBestBuyFit(RequestInfo requestInfo,
+            List<GetOrderResponse> orderResponses)
         {
-            var ord = _orderService.GetSellOrdersFromOrderBooks(orderBookDictionary);
-               var orders = ord.Value as List<GetOrderResponse>;
             var balance = requestInfo.EuroBalance;
-            var fits = new List<GetOrderResponse>(orders.Count);
+            var fits = new List<GetOrderResponse>(orderResponses.Count);
+            var currentAmount = 0M;
 
-            foreach (var item in orders)
+            foreach (var item in orderResponses)
             {
                 var itemCost = item.Amount * item.Price;
 
-                if (item.Amount < requestInfo.BTCAmount - currentAmount
+                if (item.Amount <= requestInfo.BTCAmount - currentAmount
                     && balance >= itemCost)
                 {
                     fits.Add(item);
@@ -62,20 +73,19 @@ namespace MetaExchange.Services
             if (fits.Count == 0)
             {
                 var message = "No orders that fit your request were found";
-                return new ServiceObjectResult<IEnumerable<GetOrderResponse>>(message, fits);
+                return new ServiceObjectResult<List<GetOrderResponse>>(message, fits);
             }
 
-            return new ServiceObjectResult<IEnumerable<GetOrderResponse>>(fits);
+            return new ServiceObjectResult<List<GetOrderResponse>>(fits);
         }
 
-        private ServiceObjectResult<IEnumerable<GetOrderResponse>> FindBestSellFit(RequestInfo requestInfo, Dictionary<string, OrderBook> orderBookDictionary)
+        private ServiceObjectResult<List<GetOrderResponse>> FindBestSellFit(RequestInfo requestInfo, List<GetOrderResponse> orderResponses)
         {
-            var orders = _orderService.GetBuyOrdersFromOrderBooks(orderBookDictionary).Value as List<GetOrderResponse>;
             var amount = requestInfo.BTCAmount > requestInfo.BTCBalance ? requestInfo.BTCBalance : requestInfo.BTCAmount;
-            var count = orders.Count;
+            var count = orderResponses.Count;
             var fits = new List<GetOrderResponse>(count);
 
-            foreach (var item in orders)
+            foreach (var item in orderResponses)
             {
                 if (amount >= item.Amount)
                 {
@@ -84,7 +94,7 @@ namespace MetaExchange.Services
                 }
             }
 
-            return new ServiceObjectResult<IEnumerable<GetOrderResponse>>(fits);
+            return new ServiceObjectResult<List<GetOrderResponse>>(fits);
         }
 
         private string GetOrderBookFilePath()

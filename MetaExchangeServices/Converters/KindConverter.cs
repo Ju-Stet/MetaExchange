@@ -11,12 +11,18 @@ namespace MetaExchange.Services.Converters
 
         public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.Null) return null;
+            if (reader.TokenType == JsonToken.Null)
+            {
+                return null;
+            }
+
             var value = serializer.Deserialize<string>(reader);
+
             if (value == "Limit")
             {
                 return KindEnum.Limit;
             }
+
             throw new Exception("Cannot unmarshal type Kind");
         }
 
@@ -27,12 +33,15 @@ namespace MetaExchange.Services.Converters
                 serializer.Serialize(writer, null);
                 return;
             }
+
             var value = (KindEnum)untypedValue;
+
             if (value == KindEnum.Limit)
             {
                 serializer.Serialize(writer, "Limit");
                 return;
             }
+
             throw new Exception("Cannot marshal type Kind");
         }
 

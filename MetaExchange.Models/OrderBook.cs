@@ -6,12 +6,7 @@ namespace MetaExchange.Models
     {
         public int Id { get; set; }
         public DateTimeOffset AcqTime { get; set; }
-        public Ask[] Bids { get; set; }
-        public Ask[] Asks { get; set; }
-    }
-
-    public class Ask
-    {
-        public Order Order { get; set; }
+        public Order[] Bids { get; set; }
+        public Order[] Asks { get; set; }
     }
 }

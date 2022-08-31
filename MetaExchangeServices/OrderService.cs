@@ -15,36 +15,36 @@ namespace MetaExchange.Services
             _orderMapper = orderBookMapper;
         }
 
-        public ServiceObjectResult<IEnumerable<GetOrderResponse>> GetSellOrdersFromOrderBooks(Dictionary<string, OrderBook> orderBookDictionary)
+        public ServiceObjectResult<List<GetOrderResponse>> GetSellOrdersFromOrderBooks(List<IdOrderBookDTO> idOrderBookDTOs)
         {
-            if (orderBookDictionary == null || orderBookDictionary.Count == 0)
+            if (idOrderBookDTOs == null || idOrderBookDTOs.Count == 0)
             {
                 return null;
             }
 
-            var orders = _orderMapper.MapSellOrderList(orderBookDictionary);
+            var orders = _orderMapper.MapSellOrderList(idOrderBookDTOs);
 
             orders = orders.OrderBy(o => o.Price)
                     .ThenByDescending(o => o.Amount)
                     .ToList();
 
-            return new ServiceObjectResult<IEnumerable<GetOrderResponse>>(orders);
+            return new ServiceObjectResult<List<GetOrderResponse>>(orders);
         }
 
-        public ServiceObjectResult<IEnumerable<GetOrderResponse>> GetBuyOrdersFromOrderBooks(Dictionary<string, OrderBook> orderBookDictionary)
+        public ServiceObjectResult<List<GetOrderResponse>> GetBuyOrdersFromOrderBooks(List<IdOrderBookDTO> idOrderBookDTOs)
         {
-            if (orderBookDictionary == null || orderBookDictionary.Count == 0)
+            if (idOrderBookDTOs == null || idOrderBookDTOs.Count == 0)
             {
                 return null;
             }
 
-            var orders = _orderMapper.MapBuyOrderList(orderBookDictionary);
+            var orders = _orderMapper.MapBuyOrderList(idOrderBookDTOs);
 
             orders = orders.OrderByDescending(o => o.Price)
                     .ThenByDescending(o => o.Amount)
                     .ToList();
 
-            return new ServiceObjectResult<IEnumerable<GetOrderResponse>>(orders);
+            return new ServiceObjectResult<List<GetOrderResponse>>(orders);
         }
     }
 }

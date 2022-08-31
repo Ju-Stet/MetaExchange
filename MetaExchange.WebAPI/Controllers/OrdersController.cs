@@ -5,7 +5,6 @@ using MetaExchange.Services.Validators;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace MetaExchange.WebAPI.Controllers
 {
@@ -26,14 +25,14 @@ namespace MetaExchange.WebAPI.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(ServiceObjectResult<IEnumerable<GetOrderResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> GetBestSuitableOrders([FromBody]RequestInfo requestInfo)
+        public ActionResult GetBestSuitableOrders([FromBody] RequestInfo requestInfo)
         {
             var validationResult = _requestValidator.Validate(requestInfo);
 
             if (!validationResult.IsSuccess)
                 return BadRequest(validationResult);
 
-            var result = await _orderBookService.FindBestFit(requestInfo);
+            var result = _orderBookService.FindBestFit(requestInfo);
 
             if (!result.IsSuccess)
                 return BadRequest(result);
