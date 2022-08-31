@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using MetaExchange.Models;
 using MetaExchange.Services.Mappings;
+using MetaExchange.Services.Models;
 using Moq;
 using System.Collections.Generic;
 using Xunit;
@@ -22,11 +23,11 @@ namespace MetaExchange.Services.Tests.Orders
         public void GetSellOrdersFromOrderBooks_ReturnsNullIfOrderDictionaryIsNull()
         {
             // Arrange
-            Dictionary<string, OrderBook> orderDictionary = null;
+            List<IdOrderBookDTO> orderBooks = null;
             ServiceResult expectedResult = null;
 
             // Act
-            var response = _orderService.GetSellOrdersFromOrderBooks(orderDictionary);
+            var response = _orderService.GetSellOrdersFromOrderBooks(orderBooks);
 
             // Assert
             Assert.Equal(expectedResult, response);
@@ -36,11 +37,11 @@ namespace MetaExchange.Services.Tests.Orders
         public void GetSellOrdersFromOrderBooks_ReturnsNullIfOrderDictionaryIsEmpty()
         {
             // Arrange
-            var orderBookDictionary = new Dictionary<string, OrderBook>();
+            var orderBooks = new List<IdOrderBookDTO>();
             ServiceResult expectedResult = null;
 
             // Act
-            var response = _orderService.GetSellOrdersFromOrderBooks(orderBookDictionary);
+            var response = _orderService.GetSellOrdersFromOrderBooks(orderBooks);
 
             // Assert
             Assert.Equal(expectedResult, response);
@@ -50,12 +51,12 @@ namespace MetaExchange.Services.Tests.Orders
         public void GetSellOrdersFromOrderBooks_ReturnsCorrectData()
         {
             // Arrange
-            var orderBookDictionary = TestHelper.GetOrderBookDictionary();
+            var orderBooks = TestHelper.GetOrderBooks();
             var expectedResult = TestHelper.GetOrderedSellOrders();
-            _orderMapperMock.Setup(m => m.MapSellOrderList(orderBookDictionary)).Returns(TestHelper.GetSellOrders);
+            _orderMapperMock.Setup(m => m.MapSellOrderList(orderBooks)).Returns(TestHelper.GetSellOrders());
 
             // Act
-            var response = _orderService.GetSellOrdersFromOrderBooks(orderBookDictionary).Value;
+            var response = _orderService.GetSellOrdersFromOrderBooks(orderBooks).Value;
 
             // Assert
             response.Should().BeEquivalentTo(expectedResult);
@@ -65,11 +66,11 @@ namespace MetaExchange.Services.Tests.Orders
         public void GetBuyOrdersFromOrderBooks_ReturnsNullIfOrderDictionaryIsNull()
         {
             // Arrange
-            Dictionary<string, OrderBook> orderDictionary = null;
+            List<IdOrderBookDTO> orderBooks = null;
             ServiceResult expectedResult = null;
 
             // Act
-            var response = _orderService.GetBuyOrdersFromOrderBooks(orderDictionary);
+            var response = _orderService.GetBuyOrdersFromOrderBooks(orderBooks);
 
             // Assert
             Assert.Equal(expectedResult, response);
@@ -79,11 +80,11 @@ namespace MetaExchange.Services.Tests.Orders
         public void GetBuyOrdersFromOrderBooks_ReturnsNullIfOrderDictionaryIsEmpty()
         {
             // Arrange
-            var orderBookDictionary = new Dictionary<string, OrderBook>();
+            var orderBooks = new List<IdOrderBookDTO>();
             ServiceResult expectedResult = null;
 
             // Act
-            var response = _orderService.GetBuyOrdersFromOrderBooks(orderBookDictionary);
+            var response = _orderService.GetBuyOrdersFromOrderBooks(orderBooks);
 
             // Assert
             Assert.Equal(expectedResult, response);
@@ -93,12 +94,12 @@ namespace MetaExchange.Services.Tests.Orders
         public void GetBuyOrdersFromOrderBooks_ReturnsCorrectData()
         {
             // Arrange
-            var orderBookDictionary = TestHelper.GetOrderBookDictionary();
+            var orderBooks = TestHelper.GetOrderBooks();
             var expectedResult = TestHelper.GetOrderedBuyOrders();
-            _orderMapperMock.Setup(m => m.MapBuyOrderList(orderBookDictionary)).Returns(TestHelper.GetBuyOrders);
+            _orderMapperMock.Setup(m => m.MapBuyOrderList(orderBooks)).Returns(TestHelper.GetBuyOrders);
 
             // Act
-            var response = _orderService.GetBuyOrdersFromOrderBooks(orderBookDictionary).Value;
+            var response = _orderService.GetBuyOrdersFromOrderBooks(orderBooks).Value;
 
             // Assert
             response.Should().BeEquivalentTo(expectedResult);

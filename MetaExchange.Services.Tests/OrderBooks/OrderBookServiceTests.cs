@@ -4,7 +4,6 @@ using MetaExchange.Models.Enums;
 using MetaExchange.Services.Models;
 using Moq;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace MetaExchange.Services.Tests.OrderBooks
@@ -23,102 +22,102 @@ namespace MetaExchange.Services.Tests.OrderBooks
         }
 
         [Fact]
-        public async Task FindBestFit_ReturnsCorrectDataIfOrderBookDictionaryIsNullAndRequestInfo_Buy()
+        public void FindBestFit_ReturnsCorrectDataIfOrderBookDictionaryIsNullAndRequestInfo_Buy()
         {
             // Arrange
             var requestInfo = new RequestInfo()
             {
                 OrderType = OrderTypeEnum.Buy,
-                BTCAmount = 0.3,
-                BTCBalance = 1,
-                EuroBalance = 1000
+                BTCAmount = 0.3M,
+                BTCBalance = 1M,
+                EuroBalance = 1000M
             };
-            _inputDataServiceMock.Setup(m => m.ProcessOrderBooksDataFilePathAsync(It.IsAny<string>()))
-                .ReturnsAsync(new ServiceObjectResult<Dictionary<string, OrderBook>>(TestHelper.GetOrderBookDictionary()));
-            _orderServiceMock.Setup(m => m.GetSellOrdersFromOrderBooks(It.IsAny<Dictionary<string, OrderBook>>()))
-                .Returns(new ServiceObjectResult<IEnumerable<GetOrderResponse>>(TestHelper.GetOrderedSellOrders()));
+            _inputDataServiceMock.Setup(m => m.ProcessOrderBooksDataFilePath(It.IsAny<string>()))
+                .Returns(new ServiceObjectResult<List<IdOrderBookDTO>>(TestHelper.GetOrderBooks()));
+            _orderServiceMock.Setup(m => m.GetSellOrdersFromOrderBooks(It.IsAny<List<IdOrderBookDTO>>()))
+                .Returns(new ServiceObjectResult<List<GetOrderResponse>>(TestHelper.GetOrderedSellOrders()));
 
             var expectedResult = TestHelper.GetFitForBuyRequest();
 
             // Act
-            var response = await _orderBookService.FindBestFit(requestInfo);
+            var response = _orderBookService.FindBestFit(requestInfo) as ServiceObjectResult<List<GetOrderResponse>>;
 
             // Assert
             response.Value.Should().BeEquivalentTo(expectedResult);
         }
 
         [Fact]
-        public async Task FindBestFit_ReturnsCorrectDataIfOrderBookDictionaryNotNullAndRequestInfo_Buy()
+        public void FindBestFit_ReturnsCorrectDataIfOrderBookDictionaryNotNullAndRequestInfo_Buy()
         {
             // Arrange
-            var orderBookDictionary = TestHelper.GetOrderBookDictionary();
+            var orderBooks = TestHelper.GetOrderBooks();
             var requestInfo = new RequestInfo()
             {
                 OrderType = OrderTypeEnum.Buy,
-                BTCAmount = 0.3,
-                BTCBalance = 1,
-                EuroBalance = 1000
+                BTCAmount = 0.3M,
+                BTCBalance = 1M,
+                EuroBalance = 1000M
             };
-            _inputDataServiceMock.Setup(m => m.ProcessOrderBooksDataFilePathAsync(It.IsAny<string>()))
-                .ReturnsAsync(new ServiceObjectResult<Dictionary<string, OrderBook>>(TestHelper.GetOrderBookDictionary()));
-            _orderServiceMock.Setup(m => m.GetSellOrdersFromOrderBooks(It.IsAny<Dictionary<string, OrderBook>>()))
-                .Returns(new ServiceObjectResult<IEnumerable<GetOrderResponse>>(TestHelper.GetOrderedSellOrders()));
+            _inputDataServiceMock.Setup(m => m.ProcessOrderBooksDataFilePath(It.IsAny<string>()))
+                .Returns(new ServiceObjectResult<List<IdOrderBookDTO>>(TestHelper.GetOrderBooks()));
+            _orderServiceMock.Setup(m => m.GetSellOrdersFromOrderBooks(It.IsAny<List<IdOrderBookDTO>>()))
+                .Returns(new ServiceObjectResult<List<GetOrderResponse>>(TestHelper.GetOrderedSellOrders()));
 
             var expectedResult = TestHelper.GetFitForBuyRequest();
 
             // Act
-            var response = await _orderBookService.FindBestFit(requestInfo, orderBookDictionary);
+            var response = _orderBookService.FindBestFit(requestInfo, orderBooks) as ServiceObjectResult<List<GetOrderResponse>>;
 
             // Assert
             response.Value.Should().BeEquivalentTo(expectedResult);
         }
 
         [Fact]
-        public async Task FindBestFit_ReturnsCorrectDataIfOrderBookDictionaryIsNullAndRequestInfo_Sell()
+        public void FindBestFit_ReturnsCorrectDataIfOrderBookDictionaryIsNullAndRequestInfo_Sell()
         {
             // Arrange
             var requestInfo = new RequestInfo()
             {
                 OrderType = OrderTypeEnum.Sell,
-                BTCAmount = 0.33,
-                BTCBalance = 1,
-                EuroBalance = 1000
+                BTCAmount = 0.33M,
+                BTCBalance = 1M,
+                EuroBalance = 1000M
             };
-            _inputDataServiceMock.Setup(m => m.ProcessOrderBooksDataFilePathAsync(It.IsAny<string>()))
-                .ReturnsAsync(new ServiceObjectResult<Dictionary<string, OrderBook>>(TestHelper.GetOrderBookDictionary()));
-            _orderServiceMock.Setup(m => m.GetBuyOrdersFromOrderBooks(It.IsAny<Dictionary<string, OrderBook>>()))
-                .Returns(new ServiceObjectResult<IEnumerable<GetOrderResponse>>(TestHelper.GetOrderedBuyOrders()));
+            _inputDataServiceMock.Setup(m => m.ProcessOrderBooksDataFilePath(It.IsAny<string>()))
+                .Returns(new ServiceObjectResult<List<IdOrderBookDTO>>(TestHelper.GetOrderBooks()));
+            _orderServiceMock.Setup(m => m.GetBuyOrdersFromOrderBooks(It.IsAny<List<IdOrderBookDTO>>()))
+                .Returns(new ServiceObjectResult<List<GetOrderResponse>>(TestHelper.GetOrderedBuyOrders()));
 
             var expectedResult = TestHelper.GetFitForSellRequest();
 
             // Act
-            var response = await _orderBookService.FindBestFit(requestInfo);
+            var response = _orderBookService.FindBestFit(requestInfo) as ServiceObjectResult<List<GetOrderResponse>>;
 
             // Assert
             response.Value.Should().BeEquivalentTo(expectedResult);
         }
 
         [Fact]
-        public async Task FindBestFit_ReturnsCorrectDataIfOrderBookDictionaryNotNullAndRequestInfo_Sell()
+        public void FindBestFit_ReturnsCorrectDataIfOrderBookDictionaryNotNullAndRequestInfo_Sell()
         {
             // Arrange
-            var orderBookDictionary = TestHelper.GetOrderBookDictionary();
+            var orderBooks = TestHelper.GetOrderBooks();
             var requestInfo = new RequestInfo()
             {
                 OrderType = OrderTypeEnum.Sell,
-                BTCAmount = 0.33,
-                BTCBalance = 1,
-                EuroBalance = 1000
+                BTCAmount = 0.33M,
+                BTCBalance = 1M,
+                EuroBalance = 1000M
             };
-            _inputDataServiceMock.Setup(m => m.ProcessOrderBooksDataFilePathAsync(It.IsAny<string>()))
-                .ReturnsAsync(new ServiceObjectResult<Dictionary<string, OrderBook>>(TestHelper.GetOrderBookDictionary()));
-            _orderServiceMock.Setup(m => m.GetBuyOrdersFromOrderBooks(It.IsAny<Dictionary<string, OrderBook>>()))
-                .Returns(new ServiceObjectResult<IEnumerable<GetOrderResponse>>(TestHelper.GetOrderedBuyOrders()));
+            _inputDataServiceMock.Setup(m => m.ProcessOrderBooksDataFilePath(It.IsAny<string>()))
+                .Returns(new ServiceObjectResult<List<IdOrderBookDTO>>(TestHelper.GetOrderBooks()));
+            _orderServiceMock.Setup(m => m.GetBuyOrdersFromOrderBooks(It.IsAny<List<IdOrderBookDTO>>()))
+                .Returns(new ServiceObjectResult<List<GetOrderResponse>>(TestHelper.GetOrderedBuyOrders()));
 
             var expectedResult = TestHelper.GetFitForSellRequest();
 
             // Act
-            var response = await _orderBookService.FindBestFit(requestInfo, orderBookDictionary);
+            var response = _orderBookService.FindBestFit(requestInfo, orderBooks) as ServiceObjectResult<List<GetOrderResponse>>;
 
             // Assert
             response.Value.Should().BeEquivalentTo(expectedResult);

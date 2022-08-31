@@ -8,232 +8,238 @@ namespace MetaExchange.Services.Tests
 {
     internal class TestHelper
     {
-        public static Dictionary<string, OrderBook> GetOrderBookDictionary()
+        public static List<IdOrderBookDTO> GetOrderBooks()
         {
-            var orderBookDictionary = new Dictionary<string, OrderBook>();
+            var orderBookDictionary = new List<IdOrderBookDTO>();
 
-            orderBookDictionary.Add("1548759600.25189", new OrderBook
+            orderBookDictionary.Add(new IdOrderBookDTO
             {
-                AcqTime = DateTime.Today,
-                Bids = new Ask[]
+                ID = "1548759600.25189",
+                OrderBook = new OrderBookDTO
                 {
-                    new Ask()
+                    AcqTime = DateTime.Today,
+                    Bids = new AskDTO[]
                     {
-                        Order = new Order()
+                        new AskDTO()
                         {
+                            Order = new Order()
+                            {
+                                Id = null,
+                                Time = DateTime.Today,
+                                Type = OrderTypeEnum.Buy,
+                                Kind = KindEnum.Limit,
+                                Amount = 0.1M,
+                                Price = 2960.64M
+                            }
+                        },
+                        new AskDTO()
+                        {
+                            Order = new Order()
+                            {
                             Id = null,
                             Time = DateTime.Today,
                             Type = OrderTypeEnum.Buy,
                             Kind = KindEnum.Limit,
-                            Amount = 0.1,
-                            Price = 2960.64
-                        }
-                    },
-                    new Ask()
-                    {
-                        Order = new Order()
+                            Amount = 0.1M,
+                            Price = 2960.63M
+                            }
+                        },
+                        new AskDTO()
                         {
-                            Id = null,
-                            Time = DateTime.Today,
-                            Type = OrderTypeEnum.Buy,
-                            Kind = KindEnum.Limit,
-                            Amount = 0.1,
-                            Price = 2960.63
-                        }
-                    },
-                    new Ask()
-                    {
-                        Order = new Order()
+                            Order = new Order()
+                            {
+                                Id = null,
+                                Time = DateTime.Today,
+                                Type = OrderTypeEnum.Buy,
+                                Kind = KindEnum.Limit,
+                                Amount = 0.01226619M,
+                                Price = 2958.95M
+                            }
+                        },
+                        new AskDTO()
                         {
-                            Id = null,
-                            Time = DateTime.Today,
-                            Type = OrderTypeEnum.Buy,
-                            Kind = KindEnum.Limit,
-                            Amount = 0.01226619,
-                            Price = 2958.95
-                        }
+                            Order = new Order()
+                            {
+                                Id = null,
+                                Time = DateTime.Today,
+                                Type = OrderTypeEnum.Buy,
+                                Kind = KindEnum.Limit,
+                                Amount = 0.06M,
+                                Price = 2958.52M
+                            }
+                        },
                     },
-                    new Ask()
-                    {
-                        Order = new Order()
-                        {
-                            Id = null,
-                            Time = DateTime.Today,
-                            Type = OrderTypeEnum.Buy,
-                            Kind = KindEnum.Limit,
-                            Amount = 0.06,
-                            Price = 2958.52
-                        }
-                    },
-                },
 
-                Asks = new Ask[]
-                {
-                    new Ask()
+                    Asks = new AskDTO[]
                     {
-                        Order = new Order()
+                        new AskDTO()
                         {
-                            Id = null,
-                            Time = DateTime.Today,
-                            Type = OrderTypeEnum.Sell,
-                            Kind = KindEnum.Limit,
-                            Amount = 0.1,
-                            Price = 2949.71
-                        }
-                    },
-                    new Ask()
-                    {
-                        Order = new Order()
+                            Order = new Order()
+                            {
+                                Id = null,
+                                Time = DateTime.Today,
+                                Type = OrderTypeEnum.Sell,
+                                Kind = KindEnum.Limit,
+                                Amount = 0.1M,
+                                Price = 2949.71M
+                            }
+                        },
+                        new AskDTO()
                         {
-                            Id = null,
-                            Time = DateTime.Today,
-                            Type = OrderTypeEnum.Sell,
-                            Kind = KindEnum.Limit,
-                            Amount = 0.12,
-                            Price = 2950.63
-                        }
-                    },
-                    new Ask()
-                    {
-                        Order = new Order()
+                            Order = new Order()
+                            {
+                                Id = null,
+                                Time = DateTime.Today,
+                                Type = OrderTypeEnum.Sell,
+                                Kind = KindEnum.Limit,
+                                Amount = 0.12M,
+                                Price = 2950.63M
+                            }
+                        },
+                        new AskDTO()
                         {
-                            Id = null,
-                            Time = DateTime.Today,
-                            Type = OrderTypeEnum.Sell,
-                            Kind = KindEnum.Limit,
-                            Amount = 0.0226619,
-                            Price = 2950.95
-                        }
-                    },
-                    new Ask()
-                    {
-                        Order = new Order()
+                            Order = new Order()
+                            {
+                                Id = null,
+                                Time = DateTime.Today,
+                                Type = OrderTypeEnum.Sell,
+                                Kind = KindEnum.Limit,
+                                Amount = 0.0226619M,
+                                Price = 2950.95M
+                            }
+                        },
+                        new AskDTO()
                         {
-                            Id = null,
-                            Time = DateTime.Today,
-                            Type = OrderTypeEnum.Sell,
-                            Kind = KindEnum.Limit,
-                            Amount = 0.06,
-                            Price = 2951.22
-                        }
-                    },
+                            Order = new Order()
+                            {
+                                Id = null,
+                                Time = DateTime.Today,
+                                Type = OrderTypeEnum.Sell,
+                                Kind = KindEnum.Limit,
+                                Amount = 0.06M,
+                                Price = 2951.22M
+                            }
+                        },
+                    }
                 }
-
             });
 
-            orderBookDictionary.Add("1548759601.33694", new OrderBook
+            orderBookDictionary.Add(new IdOrderBookDTO
             {
-                AcqTime = DateTime.Today,
-                Bids = new Ask[]
+                ID = "1548759601.33694",
+                OrderBook = new OrderBookDTO
                 {
-                    new Ask()
+                    AcqTime = DateTime.Today,
+                    Bids = new AskDTO[]
                     {
-                        Order = new Order()
+                        new AskDTO()
                         {
-                            Id = null,
-                            Time = DateTime.Today,
-                            Type = OrderTypeEnum.Buy,
-                            Kind = KindEnum.Limit,
-                            Amount = 0.1,
-                            Price = 2960.65
-                        }
-                    },
-                    new Ask()
-                    {
-                        Order = new Order()
+                            Order = new Order()
+                            {
+                                Id = null,
+                                Time = DateTime.Today,
+                                Type = OrderTypeEnum.Buy,
+                                Kind = KindEnum.Limit,
+                                Amount = 0.1M,
+                                Price = 2960.65M
+                            }
+                        },
+                        new AskDTO()
                         {
-                            Id = null,
-                            Time = DateTime.Today,
-                            Type = OrderTypeEnum.Buy,
-                            Kind = KindEnum.Limit,
-                            Amount = 0.1,
-                            Price = 2960.63
-                        }
-                    },
-                    new Ask()
-                    {
-                        Order = new Order()
+                            Order = new Order()
+                            {
+                                Id = null,
+                                Time = DateTime.Today,
+                                Type = OrderTypeEnum.Buy,
+                                Kind = KindEnum.Limit,
+                                Amount = 0.1M,
+                                Price = 2960.63M
+                            }
+                        },
+                        new AskDTO()
                         {
-                            Id = null,
-                            Time = DateTime.Today,
-                            Type = OrderTypeEnum.Buy,
-                            Kind = KindEnum.Limit,
-                            Amount = 0.01226619,
-                            Price = 2958.75
-                        }
-                    },
-                    new Ask()
-                    {
-                        Order = new Order()
+                            Order = new Order()
+                            {
+                                Id = null,
+                                Time = DateTime.Today,
+                                Type = OrderTypeEnum.Buy,
+                                Kind = KindEnum.Limit,
+                                Amount = 0.01226619M,
+                                Price = 2958.75M
+                            }
+                        },
+                        new AskDTO()
                         {
-                            Id = null,
-                            Time = DateTime.Today,
-                            Type = OrderTypeEnum.Buy,
-                            Kind = KindEnum.Limit,
-                            Amount = 0.06,
-                            Price = 2958.52
-                        }
+                            Order = new Order()
+                            {
+                                Id = null,
+                                Time = DateTime.Today,
+                                Type = OrderTypeEnum.Buy,
+                                Kind = KindEnum.Limit,
+                                Amount = 0.06M,
+                                Price = 2958.52M
+                            }
+                        },
                     },
-                },
 
-                Asks = new Ask[]
-                {
-                    new Ask()
+                    Asks = new AskDTO[]
                     {
-                        Order = new Order()
+                        new AskDTO()
                         {
-                            Id = null,
-                            Time = DateTime.Today,
-                            Type = OrderTypeEnum.Sell,
-                            Kind = KindEnum.Limit,
-                            Amount = 0.11,
-                            Price = 2949.71
-                        }
-                    },
-                    new Ask()
-                    {
-                        Order = new Order()
+                            Order = new Order()
+                            {
+                                Id = null,
+                                Time = DateTime.Today,
+                                Type = OrderTypeEnum.Sell,
+                                Kind = KindEnum.Limit,
+                                Amount = 0.11M,
+                                Price = 2949.71M
+                            }
+                        },
+                        new AskDTO()
                         {
-                            Id = null,
-                            Time = DateTime.Today,
-                            Type = OrderTypeEnum.Sell,
-                            Kind = KindEnum.Limit,
-                            Amount = 0.12,
-                            Price = 2950.53
-                        }
-                    },
-                    new Ask()
-                    {
-                        Order = new Order()
+                            Order = new Order()
+                            {
+                                Id = null,
+                                Time = DateTime.Today,
+                                Type = OrderTypeEnum.Sell,
+                                Kind = KindEnum.Limit,
+                                Amount = 0.12M,
+                                Price = 2950.53M
+                            }
+                        },
+                        new AskDTO()
                         {
-                            Id = null,
-                            Time = DateTime.Today,
-                            Type = OrderTypeEnum.Sell,
-                            Kind = KindEnum.Limit,
-                            Amount = 0.0226619,
-                            Price = 2950.95
-                        }
-                    },
-                    new Ask()
-                    {
-                        Order = new Order()
+                            Order = new Order()
+                            {
+                                Id = null,
+                                Time = DateTime.Today,
+                                Type = OrderTypeEnum.Sell,
+                                Kind = KindEnum.Limit,
+                                Amount = 0.0226619M,
+                                Price = 2950.95M
+                            }
+                        },
+                        new AskDTO()
                         {
-                            Id = null,
-                            Time = DateTime.Today,
-                            Type = OrderTypeEnum.Sell,
-                            Kind = KindEnum.Limit,
-                            Amount = 0.06,
-                            Price = 2951.52
-                        }
-                    },
+                            Order = new Order()
+                            {
+                                Id = null,
+                                Time = DateTime.Today,
+                                Type = OrderTypeEnum.Sell,
+                                Kind = KindEnum.Limit,
+                                Amount = 0.06M,
+                                Price = 2951.52M
+                            }
+                        },
+                    }
                 }
-
             });
 
             return orderBookDictionary;
         }
 
-        public static IEnumerable<GetOrderResponse> GetSellOrders()
+        public static List<GetOrderResponse> GetSellOrders()
         {
             var orderedSellOrders = new List<GetOrderResponse>();
 
@@ -244,8 +250,8 @@ namespace MetaExchange.Services.Tests
                 Time = DateTime.Today,
                 Type = OrderTypeEnum.Sell,
                 Kind = KindEnum.Limit,
-                Amount = 0.1,
-                Price = 2949.71
+                Amount = 0.1M,
+                Price = 2949.71M
             });
 
             orderedSellOrders.Add(new GetOrderResponse()
@@ -255,8 +261,8 @@ namespace MetaExchange.Services.Tests
                 Time = DateTime.Today,
                 Type = OrderTypeEnum.Sell,
                 Kind = KindEnum.Limit,
-                Amount = 0.12,
-                Price = 2950.63
+                Amount = 0.12M,
+                Price = 2950.63M
             });
 
             orderedSellOrders.Add(new GetOrderResponse()
@@ -266,8 +272,8 @@ namespace MetaExchange.Services.Tests
                 Time = DateTime.Today,
                 Type = OrderTypeEnum.Sell,
                 Kind = KindEnum.Limit,
-                Amount = 0.0226619,
-                Price = 2950.95
+                Amount = 0.0226619M,
+                Price = 2950.95M
             });
 
             orderedSellOrders.Add(new GetOrderResponse()
@@ -277,8 +283,8 @@ namespace MetaExchange.Services.Tests
                 Time = DateTime.Today,
                 Type = OrderTypeEnum.Sell,
                 Kind = KindEnum.Limit,
-                Amount = 0.06,
-                Price = 2951.22
+                Amount = 0.06M,
+                Price = 2951.22M
             });
 
             orderedSellOrders.Add(new GetOrderResponse()
@@ -288,8 +294,8 @@ namespace MetaExchange.Services.Tests
                 Time = DateTime.Today,
                 Type = OrderTypeEnum.Sell,
                 Kind = KindEnum.Limit,
-                Amount = 0.11,
-                Price = 2949.71
+                Amount = 0.11M,
+                Price = 2949.71M
             });
 
             orderedSellOrders.Add(new GetOrderResponse()
@@ -299,8 +305,8 @@ namespace MetaExchange.Services.Tests
                 Time = DateTime.Today,
                 Type = OrderTypeEnum.Sell,
                 Kind = KindEnum.Limit,
-                Amount = 0.12,
-                Price = 2950.53
+                Amount = 0.12M,
+                Price = 2950.53M
             });
 
             orderedSellOrders.Add(new GetOrderResponse()
@@ -310,8 +316,8 @@ namespace MetaExchange.Services.Tests
                 Time = DateTime.Today,
                 Type = OrderTypeEnum.Sell,
                 Kind = KindEnum.Limit,
-                Amount = 0.0226619,
-                Price = 2950.95
+                Amount = 0.0226619M,
+                Price = 2950.95M
             });
 
             orderedSellOrders.Add(new GetOrderResponse()
@@ -321,14 +327,14 @@ namespace MetaExchange.Services.Tests
                 Time = DateTime.Today,
                 Type = OrderTypeEnum.Sell,
                 Kind = KindEnum.Limit,
-                Amount = 0.06,
-                Price = 2951.52
+                Amount = 0.06M,
+                Price = 2951.52M
             });
 
             return orderedSellOrders;
         }
 
-        public static IEnumerable<GetOrderResponse> GetBuyOrders()
+        public static List<GetOrderResponse> GetBuyOrders()
         {
             var orderedBuyOrders = new List<GetOrderResponse>();
 
@@ -340,8 +346,8 @@ namespace MetaExchange.Services.Tests
                       Time = DateTime.Today,
                       Type = OrderTypeEnum.Buy,
                       Kind = KindEnum.Limit,
-                      Amount = 0.1,
-                      Price = 2960.64
+                      Amount = 0.1M,
+                      Price = 2960.64M
                   });
 
             orderedBuyOrders.Add(
@@ -352,8 +358,8 @@ namespace MetaExchange.Services.Tests
                     Time = DateTime.Today,
                     Type = OrderTypeEnum.Buy,
                     Kind = KindEnum.Limit,
-                    Amount = 0.1,
-                    Price = 2960.63
+                    Amount = 0.1M,
+                    Price = 2960.63M
                 });
 
             orderedBuyOrders.Add(
@@ -364,8 +370,8 @@ namespace MetaExchange.Services.Tests
                     Time = DateTime.Today,
                     Type = OrderTypeEnum.Buy,
                     Kind = KindEnum.Limit,
-                    Amount = 0.01226619,
-                    Price = 2958.95
+                    Amount = 0.01226619M,
+                    Price = 2958.95M
                 });
 
             orderedBuyOrders.Add(
@@ -376,8 +382,8 @@ namespace MetaExchange.Services.Tests
                     Time = DateTime.Today,
                     Type = OrderTypeEnum.Buy,
                     Kind = KindEnum.Limit,
-                    Amount = 0.06,
-                    Price = 2958.52
+                    Amount = 0.06M,
+                    Price = 2958.52M
                 });
 
             orderedBuyOrders.Add(
@@ -388,8 +394,8 @@ namespace MetaExchange.Services.Tests
                     Time = DateTime.Today,
                     Type = OrderTypeEnum.Buy,
                     Kind = KindEnum.Limit,
-                    Amount = 0.1,
-                    Price = 2960.65
+                    Amount = 0.1M,
+                    Price = 2960.65M
                 });
 
             orderedBuyOrders.Add(
@@ -400,8 +406,8 @@ namespace MetaExchange.Services.Tests
                     Time = DateTime.Today,
                     Type = OrderTypeEnum.Buy,
                     Kind = KindEnum.Limit,
-                    Amount = 0.1,
-                    Price = 2960.63
+                    Amount = 0.1M,
+                    Price = 2960.63M
                 });
 
             orderedBuyOrders.Add(
@@ -412,8 +418,8 @@ namespace MetaExchange.Services.Tests
                     Time = DateTime.Today,
                     Type = OrderTypeEnum.Buy,
                     Kind = KindEnum.Limit,
-                    Amount = 0.01226619,
-                    Price = 2958.75
+                    Amount = 0.01226619M,
+                    Price = 2958.75M
                 });
 
             orderedBuyOrders.Add(
@@ -424,14 +430,14 @@ namespace MetaExchange.Services.Tests
                     Time = DateTime.Today,
                     Type = OrderTypeEnum.Buy,
                     Kind = KindEnum.Limit,
-                    Amount = 0.06,
-                    Price = 2958.52
+                    Amount = 0.06M,
+                    Price = 2958.52M
                 });
 
             return orderedBuyOrders;
         }
 
-        public static IEnumerable<GetOrderResponse> GetOrderedSellOrders()
+        public static List<GetOrderResponse> GetOrderedSellOrders()
         {
             var orderedSellOrders = new List<GetOrderResponse>();
 
@@ -442,8 +448,8 @@ namespace MetaExchange.Services.Tests
                 Time = DateTime.Today,
                 Type = OrderTypeEnum.Sell,
                 Kind = KindEnum.Limit,
-                Amount = 0.11,
-                Price = 2949.71
+                Amount = 0.11M,
+                Price = 2949.71M
             });
 
             orderedSellOrders.Add(new GetOrderResponse()
@@ -453,8 +459,8 @@ namespace MetaExchange.Services.Tests
                 Time = DateTime.Today,
                 Type = OrderTypeEnum.Sell,
                 Kind = KindEnum.Limit,
-                Amount = 0.1,
-                Price = 2949.71
+                Amount = 0.1M,
+                Price = 2949.71M
             });
 
             orderedSellOrders.Add(new GetOrderResponse()
@@ -464,8 +470,8 @@ namespace MetaExchange.Services.Tests
                 Time = DateTime.Today,
                 Type = OrderTypeEnum.Sell,
                 Kind = KindEnum.Limit,
-                Amount = 0.12,
-                Price = 2950.53
+                Amount = 0.12M,
+                Price = 2950.53M
             });
 
             orderedSellOrders.Add(new GetOrderResponse()
@@ -475,8 +481,8 @@ namespace MetaExchange.Services.Tests
                 Time = DateTime.Today,
                 Type = OrderTypeEnum.Sell,
                 Kind = KindEnum.Limit,
-                Amount = 0.12,
-                Price = 2950.63
+                Amount = 0.12M,
+                Price = 2950.63M
             });
 
             orderedSellOrders.Add(new GetOrderResponse()
@@ -486,8 +492,8 @@ namespace MetaExchange.Services.Tests
                 Time = DateTime.Today,
                 Type = OrderTypeEnum.Sell,
                 Kind = KindEnum.Limit,
-                Amount = 0.0226619,
-                Price = 2950.95
+                Amount = 0.0226619M,
+                Price = 2950.95M
             });
 
             orderedSellOrders.Add(new GetOrderResponse()
@@ -497,8 +503,8 @@ namespace MetaExchange.Services.Tests
                 Time = DateTime.Today,
                 Type = OrderTypeEnum.Sell,
                 Kind = KindEnum.Limit,
-                Amount = 0.0226619,
-                Price = 2950.95
+                Amount = 0.0226619M,
+                Price = 2950.95M
             });
 
             orderedSellOrders.Add(new GetOrderResponse()
@@ -508,8 +514,8 @@ namespace MetaExchange.Services.Tests
                 Time = DateTime.Today,
                 Type = OrderTypeEnum.Sell,
                 Kind = KindEnum.Limit,
-                Amount = 0.06,
-                Price = 2951.22
+                Amount = 0.06M,
+                Price = 2951.22M
             });
 
             orderedSellOrders.Add(new GetOrderResponse()
@@ -519,14 +525,14 @@ namespace MetaExchange.Services.Tests
                 Time = DateTime.Today,
                 Type = OrderTypeEnum.Sell,
                 Kind = KindEnum.Limit,
-                Amount = 0.06,
-                Price = 2951.52
+                Amount = 0.06M,
+                Price = 2951.52M
             });
 
             return orderedSellOrders;
         }
 
-        public static IEnumerable<GetOrderResponse> GetOrderedBuyOrders()
+        public static List<GetOrderResponse> GetOrderedBuyOrders()
         {
             var orderedBuyOrders = new List<GetOrderResponse>();
 
@@ -538,8 +544,8 @@ namespace MetaExchange.Services.Tests
                       Time = DateTime.Today,
                       Type = OrderTypeEnum.Buy,
                       Kind = KindEnum.Limit,
-                      Amount = 0.1,
-                      Price = 2960.65
+                      Amount = 0.1M,
+                      Price = 2960.65M
                   });
 
             orderedBuyOrders.Add(
@@ -550,8 +556,8 @@ namespace MetaExchange.Services.Tests
                     Time = DateTime.Today,
                     Type = OrderTypeEnum.Buy,
                     Kind = KindEnum.Limit,
-                    Amount = 0.1,
-                    Price = 2960.64
+                    Amount = 0.1M,
+                    Price = 2960.64M
                 });
 
             orderedBuyOrders.Add(
@@ -562,10 +568,10 @@ namespace MetaExchange.Services.Tests
                     Time = DateTime.Today,
                     Type = OrderTypeEnum.Buy,
                     Kind = KindEnum.Limit,
-                    Amount = 0.1,
-                    Price = 2960.63
+                    Amount = 0.1M,
+                    Price = 2960.63M
                 });
-            
+
             orderedBuyOrders.Add(
                 new GetOrderResponse()
                 {
@@ -574,8 +580,8 @@ namespace MetaExchange.Services.Tests
                     Time = DateTime.Today,
                     Type = OrderTypeEnum.Buy,
                     Kind = KindEnum.Limit,
-                    Amount = 0.1,
-                    Price = 2960.63
+                    Amount = 0.1M,
+                    Price = 2960.63M
                 });
 
             orderedBuyOrders.Add(
@@ -586,8 +592,8 @@ namespace MetaExchange.Services.Tests
                     Time = DateTime.Today,
                     Type = OrderTypeEnum.Buy,
                     Kind = KindEnum.Limit,
-                    Amount = 0.01226619,
-                    Price = 2958.95
+                    Amount = 0.01226619M,
+                    Price = 2958.95M
                 });
 
             orderedBuyOrders.Add(
@@ -598,8 +604,8 @@ namespace MetaExchange.Services.Tests
                     Time = DateTime.Today,
                     Type = OrderTypeEnum.Buy,
                     Kind = KindEnum.Limit,
-                    Amount = 0.01226619,
-                    Price = 2958.75
+                    Amount = 0.01226619M,
+                    Price = 2958.75M
                 });
 
             orderedBuyOrders.Add(
@@ -610,8 +616,8 @@ namespace MetaExchange.Services.Tests
                     Time = DateTime.Today,
                     Type = OrderTypeEnum.Buy,
                     Kind = KindEnum.Limit,
-                    Amount = 0.06,
-                    Price = 2958.52
+                    Amount = 0.06M,
+                    Price = 2958.52M
                 });
 
             orderedBuyOrders.Add(
@@ -622,8 +628,8 @@ namespace MetaExchange.Services.Tests
                     Time = DateTime.Today,
                     Type = OrderTypeEnum.Buy,
                     Kind = KindEnum.Limit,
-                    Amount = 0.06,
-                    Price = 2958.52
+                    Amount = 0.06M,
+                    Price = 2958.52M
                 });
 
             return orderedBuyOrders;
@@ -640,8 +646,8 @@ namespace MetaExchange.Services.Tests
                 Time = DateTime.Today,
                 Type = OrderTypeEnum.Sell,
                 Kind = KindEnum.Limit,
-                Amount = 0.11,
-                Price = 2949.71
+                Amount = 0.11M,
+                Price = 2949.71M
             });
 
             fitForBuy.Add(new GetOrderResponse()
@@ -651,10 +657,10 @@ namespace MetaExchange.Services.Tests
                 Time = DateTime.Today,
                 Type = OrderTypeEnum.Sell,
                 Kind = KindEnum.Limit,
-                Amount = 0.1,
-                Price = 2949.71
+                Amount = 0.1M,
+                Price = 2949.71M
             });
-            
+
 
             fitForBuy.Add(new GetOrderResponse()
             {
@@ -663,8 +669,8 @@ namespace MetaExchange.Services.Tests
                 Time = DateTime.Today,
                 Type = OrderTypeEnum.Sell,
                 Kind = KindEnum.Limit,
-                Amount = 0.0226619,
-                Price = 2950.95
+                Amount = 0.0226619M,
+                Price = 2950.95M
             });
 
             fitForBuy.Add(new GetOrderResponse()
@@ -674,14 +680,14 @@ namespace MetaExchange.Services.Tests
                 Time = DateTime.Today,
                 Type = OrderTypeEnum.Sell,
                 Kind = KindEnum.Limit,
-                Amount = 0.0226619,
-                Price = 2950.95
-            });            
+                Amount = 0.0226619M,
+                Price = 2950.95M
+            });
 
             return fitForBuy;
         }
 
-        public static IEnumerable<GetOrderResponse> GetFitForSellRequest()
+        public static List<GetOrderResponse> GetFitForSellRequest()
         {
             var fitForSell = new List<GetOrderResponse>();
 
@@ -693,8 +699,8 @@ namespace MetaExchange.Services.Tests
                       Time = DateTime.Today,
                       Type = OrderTypeEnum.Buy,
                       Kind = KindEnum.Limit,
-                      Amount = 0.1,
-                      Price = 2960.65
+                      Amount = 0.1M,
+                      Price = 2960.65M
                   });
 
             fitForSell.Add(
@@ -705,8 +711,8 @@ namespace MetaExchange.Services.Tests
                     Time = DateTime.Today,
                     Type = OrderTypeEnum.Buy,
                     Kind = KindEnum.Limit,
-                    Amount = 0.1,
-                    Price = 2960.64
+                    Amount = 0.1M,
+                    Price = 2960.64M
                 });
 
             fitForSell.Add(
@@ -717,8 +723,8 @@ namespace MetaExchange.Services.Tests
                     Time = DateTime.Today,
                     Type = OrderTypeEnum.Buy,
                     Kind = KindEnum.Limit,
-                    Amount = 0.1,
-                    Price = 2960.63
+                    Amount = 0.1M,
+                    Price = 2960.63M
                 });
 
             fitForSell.Add(
@@ -729,8 +735,8 @@ namespace MetaExchange.Services.Tests
                     Time = DateTime.Today,
                     Type = OrderTypeEnum.Buy,
                     Kind = KindEnum.Limit,
-                    Amount = 0.01226619,
-                    Price = 2958.95
+                    Amount = 0.01226619M,
+                    Price = 2958.95M
                 });
 
             fitForSell.Add(
@@ -741,8 +747,8 @@ namespace MetaExchange.Services.Tests
                     Time = DateTime.Today,
                     Type = OrderTypeEnum.Buy,
                     Kind = KindEnum.Limit,
-                    Amount = 0.01226619,
-                    Price = 2958.75
+                    Amount = 0.01226619M,
+                    Price = 2958.75M
                 });
 
             return fitForSell;
