@@ -25,21 +25,29 @@ namespace MetaExchange.ConsoleApp
 
         public void Go(string[] args)
         {
-            ProcessBalanceInput(CurrencyTypeEnum.EUR, args[0]);
-            ProcessBalanceInput(CurrencyTypeEnum.BTC, args[1]);
-            ProcessDataFilePath(args[2]);
-            ProcessOrderTypeInput(args[3]);
-            ProcessBTCAmountInput(args[4]);
+            try
+            {
+                ProcessBalanceInput(CurrencyTypeEnum.EUR, args[0]);
+                ProcessBalanceInput(CurrencyTypeEnum.BTC, args[1]);
+                ProcessDataFilePath(args[2]);
+                ProcessOrderTypeInput(args[3]);
+                ProcessBTCAmountInput(args[4]);
 
-            RenderInputInfo();
-            FindBestFit(_requestInfo.OrderType);
-            RenderOutputInfo();
+                RenderInputInfo();
+                FindBestFit(_requestInfo.OrderType);
+                RenderOutputInfo();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
 
 
         private void ProcessDataFilePath(string path)
         {
+
             var result = _inputDataService.ProcessOrderBooksDataFilePath(path);
             if (result is ServiceObjectResult<List<IdOrderBookDTO>>)
             {
@@ -49,6 +57,7 @@ namespace MetaExchange.ConsoleApp
             {
                 throw new Exception(result.Message);
             }
+
         }
 
         private void ProcessOrderTypeInput(string orderType)
@@ -70,49 +79,37 @@ namespace MetaExchange.ConsoleApp
 
         private void ProcessBTCAmountInput(string BTCAmount)
         {
-            try
-            {
-                var result = _inputDataService.ProcessCurrencyAmount(BTCAmount);
+            var result = _inputDataService.ProcessCurrencyAmount(BTCAmount);
 
-                if (result is ServiceObjectResult<decimal>)
-                {
-                    _requestInfo.BTCAmount = (result as ServiceObjectResult<decimal>).Value;
-                }
-                else
-                {
-                    throw new Exception(result.Message);
-                }
-            }
-            catch (Exception ex)
+            if (result is ServiceObjectResult<decimal>)
             {
-                Console.WriteLine(ex.Message);
+                _requestInfo.BTCAmount = (result as ServiceObjectResult<decimal>).Value;
             }
+            else
+            {
+                throw new Exception(result.Message);
+            }
+
         }
 
         private void ProcessBalanceInput(CurrencyTypeEnum currencyType, string balance)
         {
-            try
-            {
-                var result = _inputDataService.ProcessCurrencyAmount(balance);
-                var isOfDouble = result is ServiceObjectResult<decimal>;
+            var result = _inputDataService.ProcessCurrencyAmount(balance);
+            var isOfDecimal = result is ServiceObjectResult<decimal>;
 
-                if (isOfDouble && currencyType == CurrencyTypeEnum.EUR)
-                {
-                    _requestInfo.EuroBalance = (result as ServiceObjectResult<decimal>).Value;
-                }
-                else if (isOfDouble && currencyType == CurrencyTypeEnum.BTC)
-                {
-                    _requestInfo.BTCBalance = (result as ServiceObjectResult<decimal>).Value;
-                }
-                else
-                {
-                    throw new Exception(result.Message);
-                }
-            }
-            catch (Exception ex)
+            if (isOfDecimal && currencyType == CurrencyTypeEnum.EUR)
             {
-                Console.WriteLine(ex.Message);
+                _requestInfo.EuroBalance = (result as ServiceObjectResult<decimal>).Value;
             }
+            else if (isOfDecimal && currencyType == CurrencyTypeEnum.BTC)
+            {
+                _requestInfo.BTCBalance = (result as ServiceObjectResult<decimal>).Value;
+            }
+            else
+            {
+                throw new Exception(result.Message);
+            }
+
         }
 
         private void RenderInputInfo()
@@ -128,15 +125,8 @@ namespace MetaExchange.ConsoleApp
 
         private void FindBestFit(OrderTypeEnum orderType)
         {
-            try
-            {
-                var serviceObjectResult = _orderBookService.FindBestFit(_requestInfo, _idOrderBookDTOs);
-                _orders = serviceObjectResult.Value;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
+            var serviceObjectResult = _orderBookService.FindBestFit(_requestInfo, _idOrderBookDTOs);
+            _orders = serviceObjectResult.Value;
         }
 
         private void RenderOutputInfo()
