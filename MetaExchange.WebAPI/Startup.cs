@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 
 namespace MetaExchange.WebAPI
 {
@@ -27,6 +28,14 @@ namespace MetaExchange.WebAPI
             services.AddTransient<IInputDataService, InputDataService>();
             services.AddTransient<IRequestValidator, RequestValidator>();
             services.AddTransient<IOrderMapper, OrderMapper>();
+            services.AddSwaggerGen(x =>
+            {
+                x.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "MetaExchange",
+                    Version = "v1"
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,6 +47,9 @@ namespace MetaExchange.WebAPI
             }
 
             app.UseHttpsRedirection();
+
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             app.UseRouting();
 
