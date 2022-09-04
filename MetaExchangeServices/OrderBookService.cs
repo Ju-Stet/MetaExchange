@@ -1,9 +1,11 @@
 ﻿using MetaExchange.Models;
 using MetaExchange.Models.Enums;
+using MetaExchange.Services.Mappings;
 using MetaExchange.Services.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace MetaExchange.Services
 {
@@ -11,63 +13,80 @@ namespace MetaExchange.Services
     {
         private readonly IOrderService _orderService;
         private readonly IInputDataService _inputDataService;
+        private readonly IExchangeMapper _exchangeMapper;
         public OrderBookService(IOrderService orderService,
-            IInputDataService inputDataService)
+            IInputDataService inputDataService,
+            IExchangeMapper exchangeMapper)
         {
             _orderService = orderService;
             _inputDataService = inputDataService;
+            _exchangeMapper = exchangeMapper;
         }
 
         public ServiceResult FindBestFit(RequestInfo requestInfo,
-            List<IdOrderBookDTO> idOrderBookDTOs = null)
+            List<ExchangeDTO> exchangeDTOs = null)
         {
-            if (idOrderBookDTOs == null)
+            if (exchangeDTOs == null)
             {
                 string path = GetOrderBookFilePath();
-                var serviceResult = _inputDataService.ProcessOrderBooksDataFilePath(path) as ServiceObjectResult<List<IdOrderBookDTO>>;
-                idOrderBookDTOs = serviceResult.Value;
+                var serviceResult = _inputDataService.ProcessOrderBooksDataFilePath(path) as ServiceObjectResult<List<ExchangeDTO>>;
+                exchangeDTOs = serviceResult.Value;
             }
 
-            if (requestInfo.OrderType == OrderTypeEnum.Buy)
+            exchangeDTOs = _exchangeMapper.MapRequestInfoOntoExchangeDTOList(requestInfo, exchangeDTOs);
+            List<GetOrderResponse> orderResponses = new List<GetOrderResponse>();
+
+            if (requestInfo.OrderType == OrderTypeEnum.Sell)
             {
-                var orderResponses = _orderService.GetSellOrdersFromOrderBooks(idOrderBookDTOs);
-                if (orderResponses != null)
+                foreach (var dto in exchangeDTOs)
                 {
-                    return FindBestBuyFit(requestInfo, orderResponses.Value);
+                    var sellOrderResponses = _orderService.GetSellOrdersFromExchangeDTO(dto);
+                    var fitOrdersInExchange = FindSellFitInExchange(requestInfo.BTCAmount, dto.BTCBalance, sellOrderResponses.Value);
+                    orderResponses.AddRange(fitOrdersInExchange);
                 }
-                return new ServiceResult("Could not get orders from order books");
+
+                orderResponses = orderResponses.OrderByDescending(o => o.Price)
+                    .ThenByDescending(o => o.Amount)
+                    .ToList();
             }
-            else if (requestInfo.OrderType == OrderTypeEnum.Sell)
+            else if (requestInfo.OrderType == OrderTypeEnum.Buy)
             {
-                var orderResponses = _orderService.GetBuyOrdersFromOrderBooks(idOrderBookDTOs);
-                if (orderResponses != null)
+                foreach (var dto in exchangeDTOs)
                 {
-                    return FindBestSellFit(requestInfo, orderResponses.Value);
+                    var buyOrderResponses = _orderService.GetBuyOrdersFromExchangeDTO(dto);
+                    var fitOrdersInExchange = FindBuyFitInExchange(requestInfo.BTCAmount, dto.EuroBalance, buyOrderResponses.Value);
+                    orderResponses.AddRange(fitOrdersInExchange);
                 }
-                return new ServiceResult("Could not get orders from order books");
+
+                orderResponses = orderResponses.OrderBy(o => o.Price)
+                    .ThenByDescending(o => o.Amount)
+                    .ToList();
+            }
+            else
+            {
+                return new ServiceResult("Unknown order type");
             }
 
-            return new ServiceResult("Unknown order type");
+            return FindFit(requestInfo.BTCAmount, orderResponses);
         }
 
-        private ServiceObjectResult<List<GetOrderResponse>> FindBestBuyFit(RequestInfo requestInfo,
-            List<GetOrderResponse> orderResponses)
+        private ServiceObjectResult<List<GetOrderResponse>> FindFit(decimal BTCAmount, List<GetOrderResponse> orderResponses)
         {
-            var balance = requestInfo.EuroBalance;
             var fits = new List<GetOrderResponse>(orderResponses.Count);
             var currentAmount = 0M;
 
             foreach (var item in orderResponses)
             {
-                var itemCost = item.Amount * item.Price;
-
-                if (item.Amount <= requestInfo.BTCAmount - currentAmount
-                    && balance >= itemCost)
+                if (item.Amount <= BTCAmount - currentAmount)
                 {
                     fits.Add(item);
-                    balance -= itemCost;
-                    currentAmount += item.Amount;
                 }
+                else if (BTCAmount - currentAmount > 0)
+                {
+                    item.Amount = BTCAmount - currentAmount;
+                    fits.Add(item);
+                }
+                currentAmount += item.Amount;
             }
 
             if (fits.Count == 0)
@@ -79,27 +98,58 @@ namespace MetaExchange.Services
             return new ServiceObjectResult<List<GetOrderResponse>>(fits);
         }
 
-        private ServiceObjectResult<List<GetOrderResponse>> FindBestSellFit(RequestInfo requestInfo, List<GetOrderResponse> orderResponses)
+        private string GetOrderBookFilePath()
         {
-            var amount = requestInfo.BTCAmount > requestInfo.BTCBalance ? requestInfo.BTCBalance : requestInfo.BTCAmount;
-            var count = orderResponses.Count;
-            var fits = new List<GetOrderResponse>(count);
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Help\order_books_data");
+        }
 
-            foreach (var item in orderResponses)
+        private List<GetOrderResponse> FindBuyFitInExchange(decimal BTCAmount, decimal EURBalance, List<GetOrderResponse> orders)
+        {
+            var fits = new List<GetOrderResponse>(orders.Count);
+            var currentAmount = 0M;
+
+            foreach (var item in orders)
+            {
+                if (EURBalance > 0
+                    && EURBalance / item.Price >= item.Amount
+                    && BTCAmount - currentAmount >= item.Amount)
+                {
+                    fits.Add(item);
+                    EURBalance -= item.Amount * item.Price;
+                    currentAmount += item.Amount;
+                }
+                else if (EURBalance > 0)
+                {
+                    item.Amount = EURBalance / item.Price;
+                    fits.Add(item);
+                    EURBalance -= item.Amount * item.Price;
+                    currentAmount -= item.Amount;
+                }
+            }
+
+            return fits;
+        }
+
+        private List<GetOrderResponse> FindSellFitInExchange(decimal BTCAmount, decimal BTCBalance, List<GetOrderResponse> orders)
+        {
+            var fits = new List<GetOrderResponse>(orders.Count);
+            var amount = BTCAmount > BTCBalance ? BTCBalance : BTCAmount;
+
+            foreach (var item in orders)
             {
                 if (amount >= item.Amount)
                 {
                     fits.Add(item);
-                    amount -= item.Amount;
                 }
+                else if (amount > 0)
+                {
+                    item.Amount = amount;
+                    fits.Add(item);
+                }
+                amount -= item.Amount;
             }
 
-            return new ServiceObjectResult<List<GetOrderResponse>>(fits);
-        }
-
-        private string GetOrderBookFilePath()
-        {
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Help\order_books_data");
+            return fits;
         }
     }
 }

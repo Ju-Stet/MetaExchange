@@ -12,7 +12,7 @@ namespace MetaExchange.ConsoleApp
     {
         private readonly IInputDataService _inputDataService;
         private readonly IOrderBookService _orderBookService;
-        private List<IdOrderBookDTO> _idOrderBookDTOs;
+        private List<ExchangeDTO> _exchangeDTOs;
         private RequestInfo _requestInfo = new RequestInfo();
         private List<GetOrderResponse> _orders;
 
@@ -49,9 +49,9 @@ namespace MetaExchange.ConsoleApp
         {
 
             var result = _inputDataService.ProcessOrderBooksDataFilePath(path);
-            if (result is ServiceObjectResult<List<IdOrderBookDTO>>)
+            if (result is ServiceObjectResult<List<ExchangeDTO>>)
             {
-                _idOrderBookDTOs = (result as ServiceObjectResult<List<IdOrderBookDTO>>).Value;
+                _exchangeDTOs = (result as ServiceObjectResult<List<ExchangeDTO>>).Value;
             }
             else
             {
@@ -125,7 +125,7 @@ namespace MetaExchange.ConsoleApp
 
         private void FindBestFit(OrderTypeEnum orderType)
         {
-            var serviceObjectResult = _orderBookService.FindBestFit(_requestInfo, _idOrderBookDTOs);
+            var serviceObjectResult = _orderBookService.FindBestFit(_requestInfo, _exchangeDTOs);
             if (serviceObjectResult is ServiceObjectResult<List<GetOrderResponse>>)
             {
                 _orders = (serviceObjectResult as ServiceObjectResult<List<GetOrderResponse>>).Value;

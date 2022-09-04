@@ -5,44 +5,30 @@ namespace MetaExchange.Services.Mappings
 {
     public class OrderMapper : IOrderMapper
     {
-        public List<GetOrderResponse> MapBuyOrderList(List<IdOrderBookDTO> idOrderBookDTOs)
+        public List<GetOrderResponse> MapBuyOrderList(ExchangeDTO exchangeDTO)
         {
-            var allOrderBooksOrderResponseList = new List<GetOrderResponse>();
+            var orderResponseList = new List<GetOrderResponse>(exchangeDTO.OrderBook.Asks.Length);
 
-            foreach (var entry in idOrderBookDTOs)
+            foreach (var ask in exchangeDTO.OrderBook.Asks)
             {
-                var orderResponseList = new List<GetOrderResponse>(entry.OrderBook.Bids.Length);
-
-                foreach (var ask in entry.OrderBook.Bids)
-                {
-                    var orderResponse = MapOrder(ask, entry.ID);
-                    orderResponseList.Add(orderResponse);
-                }
-
-                allOrderBooksOrderResponseList.AddRange(orderResponseList);
+                var orderResponse = MapOrder(ask, exchangeDTO.ID);
+                orderResponseList.Add(orderResponse);
             }
 
-            return allOrderBooksOrderResponseList;
+            return orderResponseList;
         }
 
-        public List<GetOrderResponse> MapSellOrderList(List<IdOrderBookDTO> idOrderBookDTOs)
+        public List<GetOrderResponse> MapSellOrderList(ExchangeDTO exchangeDTO)
         {
-            var allOrderBooksOrderResponseList = new List<GetOrderResponse>();
+            var orderResponseList = new List<GetOrderResponse>(exchangeDTO.OrderBook.Bids.Length);
 
-            foreach (var entry in idOrderBookDTOs)
+            foreach (var bid in exchangeDTO.OrderBook.Bids)
             {
-                var orderResponseList = new List<GetOrderResponse>(entry.OrderBook.Asks.Length);
-
-                foreach (var ask in entry.OrderBook.Asks)
-                {
-                    var orderResponse = MapOrder(ask, entry.ID);
-                    orderResponseList.Add(orderResponse);
-                }
-
-                allOrderBooksOrderResponseList.AddRange(orderResponseList);
+                var orderResponse = MapOrder(bid, exchangeDTO.ID);
+                orderResponseList.Add(orderResponse);
             }
 
-            return allOrderBooksOrderResponseList;
+            return orderResponseList;
         }
 
         private GetOrderResponse MapOrder(AskDTO ask, string orderBookId)

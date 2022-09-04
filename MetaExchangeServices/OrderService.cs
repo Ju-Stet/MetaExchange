@@ -2,7 +2,6 @@
 using MetaExchange.Services.Mappings;
 using MetaExchange.Services.Models;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MetaExchange.Services
 {
@@ -15,34 +14,26 @@ namespace MetaExchange.Services
             _orderMapper = orderBookMapper;
         }
 
-        public ServiceObjectResult<List<GetOrderResponse>> GetSellOrdersFromOrderBooks(List<IdOrderBookDTO> idOrderBookDTOs)
+        public ServiceObjectResult<List<GetOrderResponse>> GetBuyOrdersFromExchangeDTO(ExchangeDTO exchangeDTO)
         {
-            if (idOrderBookDTOs == null || idOrderBookDTOs.Count == 0)
+            if (exchangeDTO == null)
             {
                 return null;
             }
 
-            var orders = _orderMapper.MapSellOrderList(idOrderBookDTOs);
-
-            orders = orders.OrderBy(o => o.Price)
-                    .ThenByDescending(o => o.Amount)
-                    .ToList();
+            var orders = _orderMapper.MapBuyOrderList(exchangeDTO);
 
             return new ServiceObjectResult<List<GetOrderResponse>>(orders);
         }
 
-        public ServiceObjectResult<List<GetOrderResponse>> GetBuyOrdersFromOrderBooks(List<IdOrderBookDTO> idOrderBookDTOs)
+        public ServiceObjectResult<List<GetOrderResponse>> GetSellOrdersFromExchangeDTO(ExchangeDTO exchangeDTO)
         {
-            if (idOrderBookDTOs == null || idOrderBookDTOs.Count == 0)
+            if (exchangeDTO == null)
             {
                 return null;
             }
 
-            var orders = _orderMapper.MapBuyOrderList(idOrderBookDTOs);
-
-            orders = orders.OrderByDescending(o => o.Price)
-                    .ThenByDescending(o => o.Amount)
-                    .ToList();
+            var orders = _orderMapper.MapSellOrderList(exchangeDTO);
 
             return new ServiceObjectResult<List<GetOrderResponse>>(orders);
         }
