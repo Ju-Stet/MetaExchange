@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using MetaExchange.Models;
 using MetaExchange.Models.Enums;
+using MetaExchange.Services.Mappings;
 using MetaExchange.Services.Models;
 using Moq;
 using System.Collections.Generic;
@@ -11,18 +12,22 @@ namespace MetaExchange.Services.Tests.OrderBooks
     public class OrderBookServiceTests
     {
         private readonly OrderBookService _orderBookService;
-        private readonly Mock<IOrderService> _orderServiceMock;
+        private readonly IOrderService _orderService;
         private readonly Mock<IInputDataService> _inputDataServiceMock;
+        private readonly Mock<IExchangeMapper> _exchangeMapperMock;
 
         public OrderBookServiceTests()
         {
             _inputDataServiceMock = new Mock<IInputDataService>();
-            _orderServiceMock = new Mock<IOrderService>();
-            _orderBookService = new OrderBookService(_orderServiceMock.Object, _inputDataServiceMock.Object);
+            _orderService = new OrderService(new OrderMapper());
+            _exchangeMapperMock = new Mock<IExchangeMapper>();
+            _orderBookService = new OrderBookService(_orderService, 
+                _inputDataServiceMock.Object, 
+                _exchangeMapperMock.Object);
         }
 
         [Fact]
-        public void FindBestFit_ReturnsCorrectDataIfOrderBookDictionaryIsNullAndRequestInfo_Buy()
+        public void FindBestFit_ReturnsCorrectDataIfExchangeDTOIsNullAndRequestInfo_Buy()
         {
             // Arrange
             var requestInfo = new RequestInfo()
@@ -33,9 +38,9 @@ namespace MetaExchange.Services.Tests.OrderBooks
                 EuroBalance = 1000M
             };
             _inputDataServiceMock.Setup(m => m.ProcessOrderBooksDataFilePath(It.IsAny<string>()))
-                .Returns(new ServiceObjectResult<List<IdOrderBookDTO>>(TestHelper.GetOrderBooks()));
-            _orderServiceMock.Setup(m => m.GetSellOrdersFromOrderBooks(It.IsAny<List<IdOrderBookDTO>>()))
-                .Returns(new ServiceObjectResult<List<GetOrderResponse>>(TestHelper.GetOrderedSellOrders()));
+                .Returns(new ServiceObjectResult<List<ExchangeDTO>>(TestHelper.GetExchangeDTOs()));
+            _exchangeMapperMock.Setup(m => m.MapRequestInfoOntoExchangeDTOList(It.IsAny<RequestInfo>(), It.IsAny<List<ExchangeDTO>>()))
+                .Returns(TestHelper.GetExchangeDTOs());
 
             var expectedResult = TestHelper.GetFitForBuyRequest();
 
@@ -47,10 +52,10 @@ namespace MetaExchange.Services.Tests.OrderBooks
         }
 
         [Fact]
-        public void FindBestFit_ReturnsCorrectDataIfOrderBookDictionaryNotNullAndRequestInfo_Buy()
+        public void FindBestFit_ReturnsCorrectDataIfExchangeDTONotNullAndRequestInfo_Buy()
         {
             // Arrange
-            var orderBooks = TestHelper.GetOrderBooks();
+            var exchangeDTOs = TestHelper.GetExchangeDTOs();
             var requestInfo = new RequestInfo()
             {
                 OrderType = OrderTypeEnum.Buy,
@@ -59,21 +64,21 @@ namespace MetaExchange.Services.Tests.OrderBooks
                 EuroBalance = 1000M
             };
             _inputDataServiceMock.Setup(m => m.ProcessOrderBooksDataFilePath(It.IsAny<string>()))
-                .Returns(new ServiceObjectResult<List<IdOrderBookDTO>>(TestHelper.GetOrderBooks()));
-            _orderServiceMock.Setup(m => m.GetSellOrdersFromOrderBooks(It.IsAny<List<IdOrderBookDTO>>()))
-                .Returns(new ServiceObjectResult<List<GetOrderResponse>>(TestHelper.GetOrderedSellOrders()));
+                .Returns(new ServiceObjectResult<List<ExchangeDTO>>(TestHelper.GetExchangeDTOs()));
+            _exchangeMapperMock.Setup(m => m.MapRequestInfoOntoExchangeDTOList(It.IsAny<RequestInfo>(), It.IsAny<List<ExchangeDTO>>()))
+                .Returns(TestHelper.GetExchangeDTOs());
 
             var expectedResult = TestHelper.GetFitForBuyRequest();
 
             // Act
-            var response = _orderBookService.FindBestFit(requestInfo, orderBooks) as ServiceObjectResult<List<GetOrderResponse>>;
+            var response = _orderBookService.FindBestFit(requestInfo, exchangeDTOs) as ServiceObjectResult<List<GetOrderResponse>>;
 
             // Assert
             response.Value.Should().BeEquivalentTo(expectedResult);
         }
 
         [Fact]
-        public void FindBestFit_ReturnsCorrectDataIfOrderBookDictionaryIsNullAndRequestInfo_Sell()
+        public void FindBestFit_ReturnsCorrectDataIfExchangeDTOIsNullAndRequestInfo_Sell()
         {
             // Arrange
             var requestInfo = new RequestInfo()
@@ -84,9 +89,9 @@ namespace MetaExchange.Services.Tests.OrderBooks
                 EuroBalance = 1000M
             };
             _inputDataServiceMock.Setup(m => m.ProcessOrderBooksDataFilePath(It.IsAny<string>()))
-                .Returns(new ServiceObjectResult<List<IdOrderBookDTO>>(TestHelper.GetOrderBooks()));
-            _orderServiceMock.Setup(m => m.GetBuyOrdersFromOrderBooks(It.IsAny<List<IdOrderBookDTO>>()))
-                .Returns(new ServiceObjectResult<List<GetOrderResponse>>(TestHelper.GetOrderedBuyOrders()));
+                .Returns(new ServiceObjectResult<List<ExchangeDTO>>(TestHelper.GetExchangeDTOs()));
+            _exchangeMapperMock.Setup(m => m.MapRequestInfoOntoExchangeDTOList(It.IsAny<RequestInfo>(), It.IsAny<List<ExchangeDTO>>()))
+                .Returns(TestHelper.GetExchangeDTOs());
 
             var expectedResult = TestHelper.GetFitForSellRequest();
 
@@ -98,10 +103,10 @@ namespace MetaExchange.Services.Tests.OrderBooks
         }
 
         [Fact]
-        public void FindBestFit_ReturnsCorrectDataIfOrderBookDictionaryNotNullAndRequestInfo_Sell()
+        public void FindBestFit_ReturnsCorrectDataIfExchangeDTONotNullAndRequestInfo_Sell()
         {
             // Arrange
-            var orderBooks = TestHelper.GetOrderBooks();
+            var exchangeDTOs = TestHelper.GetExchangeDTOs();
             var requestInfo = new RequestInfo()
             {
                 OrderType = OrderTypeEnum.Sell,
@@ -110,14 +115,14 @@ namespace MetaExchange.Services.Tests.OrderBooks
                 EuroBalance = 1000M
             };
             _inputDataServiceMock.Setup(m => m.ProcessOrderBooksDataFilePath(It.IsAny<string>()))
-                .Returns(new ServiceObjectResult<List<IdOrderBookDTO>>(TestHelper.GetOrderBooks()));
-            _orderServiceMock.Setup(m => m.GetBuyOrdersFromOrderBooks(It.IsAny<List<IdOrderBookDTO>>()))
-                .Returns(new ServiceObjectResult<List<GetOrderResponse>>(TestHelper.GetOrderedBuyOrders()));
+                 .Returns(new ServiceObjectResult<List<ExchangeDTO>>(TestHelper.GetExchangeDTOs()));
+            _exchangeMapperMock.Setup(m => m.MapRequestInfoOntoExchangeDTOList(It.IsAny<RequestInfo>(), It.IsAny<List<ExchangeDTO>>()))
+                .Returns(TestHelper.GetExchangeDTOs());
 
             var expectedResult = TestHelper.GetFitForSellRequest();
 
             // Act
-            var response = _orderBookService.FindBestFit(requestInfo, orderBooks) as ServiceObjectResult<List<GetOrderResponse>>;
+            var response = _orderBookService.FindBestFit(requestInfo) as ServiceObjectResult<List<GetOrderResponse>>;
 
             // Assert
             response.Value.Should().BeEquivalentTo(expectedResult);
