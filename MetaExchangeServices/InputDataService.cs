@@ -11,7 +11,7 @@ namespace MetaExchange.Services
 {
     public class InputDataService : IInputDataService
     {
-        private List<IdOrderBookDTO> idOrderBookDTOs = new List<IdOrderBookDTO>();
+        private List<ExchangeDTO> exchangeDTOs = new List<ExchangeDTO>();
         static readonly Regex pattern = new Regex(@"(?<key>\d+\.+\d+)[\t*|\s*](?<value>\{(.+|\t +|\s +))");
 
         public ServiceResult ProcessOrderBooksDataFilePath(string input)
@@ -22,7 +22,7 @@ namespace MetaExchange.Services
             }
             try
             {
-                return CreateIdOrderBookDTOList(input);
+                return CreateExchangeDTOList(input);
             }
             catch (Exception ex)
             {
@@ -41,7 +41,7 @@ namespace MetaExchange.Services
         }
 
 
-        private ServiceResult CreateIdOrderBookDTOList(string input)
+        private ServiceResult CreateExchangeDTOList(string input)
         {
             try
             {
@@ -54,13 +54,13 @@ namespace MetaExchange.Services
                     var serializer = JsonSerializer.Create(Converter.Settings);
                     var jsonReader = new JsonTextReader(new StringReader(match.Groups["value"].Value));
                     var orderBook = serializer.Deserialize<OrderBookDTO>(jsonReader);
-                    idOrderBookDTOs.Add(new IdOrderBookDTO()
+                    exchangeDTOs.Add(new ExchangeDTO()
                     {
                         ID = match.Groups["key"].Value,
                         OrderBook = orderBook
                     });
                 }
-                return new ServiceObjectResult<List<IdOrderBookDTO>>(idOrderBookDTOs);
+                return new ServiceObjectResult<List<ExchangeDTO>>(exchangeDTOs);
             }
             catch (Exception)
             {

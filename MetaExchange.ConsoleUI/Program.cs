@@ -35,6 +35,7 @@ namespace MetaExchange.ConsoleUI
                     services.AddTransient<IInputDataService, InputDataService>();
                     services.AddTransient<IRequestValidator, RequestValidator>();
                     services.AddTransient<IOrderMapper, OrderMapper>();
+                    services.AddTransient<IExchangeMapper, ExchangeMapper>();
                     services.AddTransient<IService, Service>();
                 });
 

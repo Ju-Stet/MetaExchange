@@ -28,6 +28,7 @@ namespace MetaExchange.WebAPI
             services.AddTransient<IInputDataService, InputDataService>();
             services.AddTransient<IRequestValidator, RequestValidator>();
             services.AddTransient<IOrderMapper, OrderMapper>();
+            services.AddTransient<IExchangeMapper, ExchangeMapper>();
             services.AddSwaggerGen(x =>
             {
                 x.SwaggerDoc("v1", new OpenApiInfo
